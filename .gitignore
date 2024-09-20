@@ -3,6 +3,8 @@ tests/**/skip*.sm*
 test-smlunit
 install-smlsharp
 
+.sml_test_cache.json
+
 **repo-link.txt
 links.md
 **/*temp.md

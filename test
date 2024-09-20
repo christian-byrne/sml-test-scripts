@@ -5,54 +5,57 @@
 # $1: Use SMLUnit (true/false)
 #
 
-USE_SMLUNIT=${1:-false}
 
-# Define the path to the tests folder
-TESTS_DIR="./tests"
+python3 test.py
 
-# Find all files that start with "test_" and end with ".sml" in the tests folder
-TEST_FILES=$(find "$TESTS_DIR" -type f -name "test_*.sml")
+# USE_SMLUNIT=${1:-false}
 
-# Check if we found any test files
-if [ -z "$TEST_FILES" ]; then
-  echo "No test files found."
-  exit 1
-fi
+# # Define the path to the tests folder
+# TESTS_DIR="./tests"
 
-# Initialize a variable to track if any test fails
-TEST_FAILED=0
+# # Find all files that start with "test_" and end with ".sml" in the tests folder
+# TEST_FILES=$(find "$TESTS_DIR" -type f -name "test_*.sml")
 
-# Load each test file in the SML interpreter
-for TEST_FILE in $TEST_FILES; do
-  echo "Running tests in: $TEST_FILE"
+# # Check if we found any test files
+# if [ -z "$TEST_FILES" ]; then
+#   echo "No test files found."
+#   exit 1
+# fi
 
-  # If we are using SMLUnit, load the SMLUnit library before loading the test file
-  if [ "$USE_SMLUNIT" = true ]; then
-    echo "Using SMLUnit"
-    export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
-    # smlsharp < "$TESTS_DIR/SMLUnit/smlunit-lib.smi"
-    smlsharp < "$TEST_FILE"
-    EXIT_CODE=$?
+# # Initialize a variable to track if any test fails
+# TEST_FAILED=0
 
-  # Else, just use sml to load the test file
-  else
-    sml < "$TEST_FILE"
-    EXIT_CODE=$?
-  fi
+# # Load each test file in the SML interpreter
+# for TEST_FILE in $TEST_FILES; do
+#   echo "Running tests in: $TEST_FILE"
 
-  # If the test failed (non-zero exit code), mark it as failed
-  if [ $EXIT_CODE -ne 0 ]; then
-    echo "Test failed in: $TEST_FILE"
-    TEST_FAILED=1
-  fi
-done
+#   # If we are using SMLUnit, load the SMLUnit library before loading the test file
+#   if [ "$USE_SMLUNIT" = true ]; then
+#     echo "Using SMLUnit"
+#     export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+#     # smlsharp < "$TESTS_DIR/SMLUnit/smlunit-lib.smi"
+#     smlsharp < "$TEST_FILE"
+#     EXIT_CODE=$?
 
-# Exit with error if any tests failed
-if [ $TEST_FAILED -ne 0 ]; then
-  echo "Some tests failed."
-  exit 1
-else
-  echo "All tests passed."
-  exit 0
-fi
+#   # Else, just use sml to load the test file
+#   else
+#     sml < "$TEST_FILE"
+#     EXIT_CODE=$?
+#   fi
+
+#   # If the test failed (non-zero exit code), mark it as failed
+#   if [ $EXIT_CODE -ne 0 ]; then
+#     echo "Test failed in: $TEST_FILE"
+#     TEST_FAILED=1
+#   fi
+# done
+
+# # Exit with error if any tests failed
+# if [ $TEST_FAILED -ne 0 ]; then
+#   echo "Some tests failed."
+#   exit 1
+# else
+#   echo "All tests passed."
+#   exit 0
+# fi
 

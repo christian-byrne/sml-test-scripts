@@ -19,7 +19,7 @@ fun countZeros([]) = 0
 
 (* Question 5 *)
 fun orList([]) = false
-  | orList(boolList) = orList(tl(boolList)) orelse hd(boolList);
+  | orList(boolList) = hd(boolList) orelse orList(tl(boolList));
 
 (* Question 6 *)
 fun andList([]) = true
@@ -43,6 +43,6 @@ fun removeZeros([]) = []
 
 (* Question 10 *)
 fun combineLists([], [], operator) = []
-  | combineLists([], li2, operator) = operator(hd(li2)) :: combineLists([], tl(li2), operator)
-  | combineLists(li1, [], operator) = operator(hd(li1)) :: combineLists(tl(li1), [], operator)
-  | combineLists(li1, li2, operator) = operator(hd(li1) + hd(li2)) :: combineLists(tl(li1), tl(li2), operator);
+  | combineLists([], li2, operator) = hd(li2) :: combineLists([], tl(li2), operator)
+  | combineLists(li1, [], operator) = hd(li1) :: combineLists(tl(li1), [], operator)
+  | combineLists(li1, li2, operator) = operator(hd(li1), hd(li2)) :: combineLists(tl(li1), tl(li2), operator);

@@ -15,7 +15,7 @@ val testCasesLog2 = [
   (log2, 128, 7), (* 2^7 = 128 *)
   (log2, 256, 8) (* 2^8 = 256 *)
 ];
-runTestCases(testCasesLog2);
+runTestCasesIntInt(testCasesLog2);
 
 val testCasesFactorial = [
   (factorial, 0, 1), (* 0! = 1 *)
@@ -29,7 +29,7 @@ val testCasesFactorial = [
   (factorial, 8, 40320), (* 8! = 40320 *)
   (factorial, 10, 3628800) (* 10! = 3628800 *)
 ];
-runTestCases(testCasesFactorial);
+runTestCasesIntInt(testCasesFactorial);
 
 val testCasesFib = [
   (* a_n = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55} *)
@@ -45,7 +45,7 @@ val testCasesFib = [
   (fib, 9, 34), 
   (fib, 10, 55)
 ];
-runTestCases(testCasesFib);
+runTestCasesIntInt(testCasesFib);
 
 val testCasesCountZeros = [
   (countZeros, [0, 1, 0, 1, 0], 3), 
@@ -58,7 +58,7 @@ val testCasesCountZeros = [
   (countZeros, [1, 0, 1, 0, 1], 2), 
   (countZeros, [0, 0, 1, 0, 0, 0], 5)
 ];
-runTestCases(testCasesCountZeros);
+runTestCasesIntListInt(testCasesCountZeros);
 
 val testCasesOrList = [
   (orList, [true, true, true], true), 
@@ -72,7 +72,7 @@ val testCasesOrList = [
   (orList, [false], false), (* Single false element *)
   (orList, [true], true) (* Single true element *)
 ];
-runTestCases(testCasesOrList);
+runTestCasesBoolListBool(testCasesOrList);
 
 val testCasesAndList = [
   (andList, [true, true, true], true), 
@@ -82,7 +82,7 @@ val testCasesAndList = [
   (andList, [true], true),
   (andList, [false], false)
 ];
-runTestCases(testCasesAndList);
+runTestCasesBoolListBool(testCasesAndList);
 
 val testCasesAddLists = [
   (addLists, ([1, 2, 3], [4, 5, 6]), [5, 7, 9]), 
@@ -93,7 +93,7 @@ val testCasesAddLists = [
   (addLists, ([1, 2, 3], [4, 5, 6, 7]), [5, 7, 9, 7]),
   (addLists, ([1, 2, 3, 4, 5], [4, 5, 6]), [5, 7, 9, 4, 5])
 ];
-runTestCases(testCasesAddLists);
+runTestCasesIntListIntList(testCasesAddLists);
 
 val testCasesReverseList = [
   (reverseList, [1, 2, 3], [3, 2, 1]), 
@@ -105,7 +105,7 @@ val testCasesReverseList = [
   (reverseList, [1, 0, 0, 1, 0], [0, 1, 0, 0, 1]),
   (reverseList, [0, 0, 0], [0, 0, 0])  
 ];
-runTestCases(testCasesReverseList);
+runTestCasesIntListIntList(testCasesReverseList);
 
 fun removeZeros([]) = []
   | removeZeros(li) =
@@ -122,33 +122,33 @@ val testCasesRemoveZeros = [
   (removeZeros, [0, 0, 0, 1, 0], [1]),
   (removeZeros, [1, 0, 1, 0, 1], [1, 1, 1])
 ];
-runTestCases(testCasesRemoveZeros);
+runTestCasesIntListIntList(testCasesRemoveZeros);
 
-fun add(x, y) = x + y;
-fun subtract(x, y) = x - y;
-fun multiply(x, y) = x * y;
+fun mockAdd(x, y) = x + y;
+fun mockModulus(x, y) = x mod y;
+fun mockDiv(x, y) = x div y;
 fun doNothing(x, y) = x;
 
 val testCasesCombineLists = [
-  (combineLists, ([1, 2, 3], [4, 5, 6], add), [5, 7, 9]), 
-  (combineLists, ([1, 2], [4, 5, 6], add), [5, 7, 6]), 
-  (combineLists, ([1, 2, 3], [], add), [1, 2, 3]), 
-  (combineLists, ([], [4, 5, 6], add), [4, 5, 6]),
-  (combineLists, ([], [], add), []),
-  (combineLists, ([1, 2, 3], [4, 5, 6], subtract), [-3, -3, -3]),
-  (combineLists, ([1, 2], [4, 5, 6], subtract), [-3, -3, 6]),
-  (combineLists, ([1, 2, 3], [], subtract), [1, 2, 3]),
-  (combineLists, ([], [4, 5, 6], subtract), [-4, -5, -6]),
-  (combineLists, ([], [], subtract), []),
-  (combineLists, ([1, 2, 3], [4, 5, 6], multiply), [4, 10, 18]),
-  (combineLists, ([1, 2], [4, 5, 6], multiply), [4, 10, 6]),
-  (combineLists, ([1, 2, 3], [], multiply), [1, 2, 3]),
-  (combineLists, ([], [4, 5, 6], multiply), [4, 5, 6]),
-  (combineLists, ([], [], multiply), []),
-  (combineLists, ([1, 2, 3], [4, 5, 6], doNothing), [5, 7, 9]),
-  (combineLists, ([1, 2], [4, 5, 6], doNothing), [5, 7, 6]),
-  (combineLists, ([1, 2, 3], [], doNothing), [1, 2, 3]),
-  (combineLists, ([], [4, 5, 6], doNothing), [4, 5, 6]),
-  (combineLists, ([], [], doNothing), [])
+  (combineLists, [1, 2, 3], [4, 5, 6], mockAdd, [5, 7, 9]), 
+  (combineLists, [1, 2], [4, 5, 6], mockAdd, [5, 7, 6]), 
+  (combineLists, [1, 2, 3], [], mockAdd, [1, 2, 3]), 
+  (combineLists, [], [4, 5, 6], mockAdd, [4, 5, 6]),
+  (combineLists, [], [], mockAdd, []),
+  (combineLists, [1, 2, 3], [4, 5, 6], mockModulus, [1, 2, 3]),
+  (combineLists, [1, 2], [4, 5, 6], mockModulus, [1, 2, 6]),
+  (combineLists, [1, 2, 3], [], mockModulus, [1, 2, 3]),
+  (combineLists, [], [4, 5, 6], mockModulus, [4, 5, 6]),
+  (combineLists, [], [], mockModulus, []),
+  (combineLists, [1, 2, 3], [4, 5, 6], mockDiv, [0, 0, 0]),
+  (combineLists, [1, 2], [4, 5, 6], mockDiv, [0, 0, 6]),
+  (combineLists, [1, 2, 3], [], mockDiv, [1, 2, 3]),
+  (combineLists, [], [4, 5, 6], mockDiv, [4, 5, 6]),
+  (combineLists, [], [], mockDiv, []),
+  (combineLists, [1, 2, 3], [4, 5, 6], doNothing, [1, 2, 3]),
+  (combineLists, [1, 2], [4, 5, 6], doNothing, [1, 2, 6]),
+  (combineLists, [1, 2, 3], [], doNothing, [1, 2, 3]),
+  (combineLists, [], [4, 5, 6], doNothing, [4, 5, 6]),
+  (combineLists, [], [], doNothing, [])
 ];
-runTestCases(testCasesCombineLists);
+runTestCasesIntListIntListOperatorToIntList(testCasesCombineLists);

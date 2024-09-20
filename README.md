@@ -4,6 +4,21 @@
 > 
 > By default, tests are discovered by looking for sml files that start with `test_` in the `tests` directory. -->
 
+Setup:
+
+```sh
+chmod +x ./install
+./install
+```
+
+Run tests:
+
+```
+chmod +x ./test
+./test
+```
+
+Options
 
 ```sh
 usage: test.py [-h] [-x] [--cache-path CACHE_PATH] [--cache-show [CACHE_SHOW]] [--cache-clear] [-k EXPRESSION]

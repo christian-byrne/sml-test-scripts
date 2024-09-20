@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Define the path to the tests folder
+TESTS_DIR="./tests"
+
+# Find all files that start with "test_" and end with ".sml" in the tests folder
+TEST_FILES=$(find "$TESTS_DIR" -type f -name "test_*.sml")
+
+# Check if we found any test files
+if [ -z "$TEST_FILES" ]; then
+  echo "No test files found."
+  exit 1
+fi
+
+# Load each test file in the SML interpreter
+for TEST_FILE in $TEST_FILES; do
+  echo "Running tests in: $TEST_FILE"
+  sml < "$TEST_FILE"
+done

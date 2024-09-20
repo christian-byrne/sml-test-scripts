@@ -1,7 +1,6 @@
-(* tests.sml *)
 structure SU = SMLUnit
 open SU
-use "functions.sml"
+use "../src/ica05/ica5.sml"
 
 (* Tests for log2 *)
 val test_log2 = SU.suite "Log2 Tests" [

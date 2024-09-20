@@ -1,0 +1,20 @@
+#!/bin/bash
+
+source ./.env
+
+if [ -z $UA_NET_ID ]; then
+  echo "Set UA_NET_ID in .env"
+  exit 1
+fi
+
+if [ -z $LECTURA_PASSWORD ]; then
+  echo "Set LECTURA_PASSWORD in .env"
+  exit 1
+fi
+
+# Copy lectura password to clipboard
+echo $LECTURA_PASSWORD | clipboard
+
+echo -e "\nPassword copied to clipboard"
+echo "Connecting to lectura..."
+ssh $UA_NET_ID@lectura.cs.arizona.edu

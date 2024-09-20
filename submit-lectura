@@ -1,0 +1,25 @@
+#!/bin/bash
+
+source ./.env
+
+if [ -z $1 ]; then
+  echo "No file provided"
+  exit 1
+fi
+
+if [ ! -f $1 ]; then
+  echo "File does not exist"
+  exit 1
+fi
+
+if [ -z $LECTURA_PASSWORD ]; then
+  echo "Set LECTURA_PASSWORD in .env"
+  exit 1
+fi
+
+# Copy lectura password to clipboard
+echo $LECTURA_PASSWORD | clipboard
+
+echo -e "\nPassword copied to clipboard"
+
+scp $1 $UA_NET_ID@lectura.cs.arizona.edu:~/submit-lectura

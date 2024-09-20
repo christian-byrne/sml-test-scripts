@@ -1,3 +1,4 @@
+.env
 tests/**/skip*.sm*
 
 **repo-link.txt

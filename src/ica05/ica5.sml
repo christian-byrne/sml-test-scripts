@@ -30,7 +30,7 @@ fun reverseList([]) = []
   | reverseList(li) = reverseList(tl(li)) @ [hd(li)];
 
 fun removeZeros([]) = []
-  | removeZeros(li) = 
+  | removeZeros(li) =
     if hd(li) = 0 then removeZeros(tl(li))
     else hd(li) :: removeZeros(tl(li));
 

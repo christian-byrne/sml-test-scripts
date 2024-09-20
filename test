@@ -1,7 +1,11 @@
 #!/bin/bash
 
-#sudo find / -name "libmyth.*"
-export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+#
+# Args:
+# $1: Use SMLUnit (true/false)
+#
+
+USE_SMLUNIT=${1:-false}
 
 # Define the path to the tests folder
 TESTS_DIR="./tests"
@@ -18,5 +22,16 @@ fi
 # Load each test file in the SML interpreter
 for TEST_FILE in $TEST_FILES; do
   echo "Running tests in: $TEST_FILE"
-  smlsharp < "$TEST_FILE"
+
+  # If we are using SMLUnit, load the SMLUnit library before loading the test file
+  if [ "$USE_SMLUNIT" = true ]; then
+    echo "Using SMLUnit"
+    export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+    # smlsharp < "$TESTS_DIR/SMLUnit/smlunit-lib.smi"
+    smlsharp < "$TEST_FILE"
+
+  # Else, just use sml to load the test file
+  else
+    sml < "$TEST_FILE"
+  fi
 done

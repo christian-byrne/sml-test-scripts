@@ -1,0 +1,33 @@
+name: Run SMLUnit Unit Tests with SML#
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    if: contains(github.event.head_commit.message, '[smlsharp-test]')
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install SML#
+      run: |
+        sudo apt-get update
+        sudo apt-get install smlnj  # Install SML/NJ
+        sudo apt-get install smlsharp  # Install SML#
+        sudo apt-get install llvm-14 # Install LLVM 14
+        sudo apt-get install libmyth # Install mythril
+        export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libmyth.so.0 /usr/lib/x86_64-linux-gnu/libmyth.so 
+
+    - name: Run SML tests
+      run: |
+        chmod +x test
+        ./test true

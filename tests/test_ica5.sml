@@ -1,105 +1,148 @@
-structure Test = SMLUnit.Test
-structure Assert = SMLUnit.Assert
-val _ = Assert.assertTrue (true)
-(* open SU *)
-(* val _ = SU.assertEqual (1, 1) *)
+use "src/ica05/ica5.sml";
 
-use "src/ica05/ica5.sml" (* Test runner called from root of project *)
+(* TODO: the test runner functions should be moved to a separate file *)
 
-(* Tests for log2 *)
-val test_log2 = SU.suite "Log2 Tests" [
-  SU.test "log2(1)" (fn () => SU.assertEqual (log2 1, 0)),
-  SU.test "log2(2)" (fn () => SU.assertEqual (log2 2, 1)),
-  SU.test "log2(4)" (fn () => SU.assertEqual (log2 4, 2)),
-  SU.test "log2(8)" (fn () => SU.assertEqual (log2 8, 3)),
-  SU.test "log2(16)" (fn () => SU.assertEqual (log2 16, 4))
-]
+(* Function to color the output in the terminal *)
+fun red(s) = "\027[31m" ^ s ^ "\027[0m"
+fun green(s) = "\027[32m" ^ s ^ "\027[0m"
 
-(* Tests for factorial *)
-val test_factorial = SU.suite "Factorial Tests" [
-  SU.test "factorial(0)" (fn () => SU.assertEqual (factorial 0, 1)),
-  SU.test "factorial(1)" (fn () => SU.assertEqual (factorial 1, 1)),
-  SU.test "factorial(2)" (fn () => SU.assertEqual (factorial 2, 2)),
-  SU.test "factorial(3)" (fn () => SU.assertEqual (factorial 3, 6)),
-  SU.test "factorial(4)" (fn () => SU.assertEqual (factorial 4, 24)),
-  SU.test "factorial(5)" (fn () => SU.assertEqual (factorial 5, 120))
-]
 
-(* Tests for fib *)
-val test_fib = SU.suite "Fibonacci Tests" [
-  SU.test "fib(0)" (fn () => SU.assertEqual (fib 0, 0)),
-  SU.test "fib(1)" (fn () => SU.assertEqual (fib 1, 1)),
-  SU.test "fib(2)" (fn () => SU.assertEqual (fib 2, 1)),
-  SU.test "fib(3)" (fn () => SU.assertEqual (fib 3, 2)),
-  SU.test "fib(4)" (fn () => SU.assertEqual (fib 4, 3)),
-  SU.test "fib(5)" (fn () => SU.assertEqual (fib 5, 5)),
-  SU.test "fib(6)" (fn () => SU.assertEqual (fib 6, 8)),
-  SU.test "fib(7)" (fn () => SU.assertEqual (fib 7, 13))
-]
+(* Enhanced test case runner with more visual indicators *)
+fun runTestCases([]) = ()
+  | runTestCases(testCaseList) = 
+    let 
+      val (f, param, expected) = hd(testCaseList);
+      val result = f(param);
+      val testMessage = 
+        if result <> expected then
+          red("Test failed\n") ^ 
+          "Expected: " ^ Int.toString(expected) ^ "\n" ^
+          "Actual: " ^ Int.toString(result) ^ "\n\n"
+        else 
+          green("Test passed\n");
+    in
+      print(testMessage);
+      runTestCases(tl(testCaseList))
+    end;
 
-(* Tests for countZeros *)
-val test_countZeros = SU.suite "Count Zeros Tests" [
-  SU.test "countZeros([0,1,0,1,0])" (fn () => SU.assertEqual (countZeros [0,1,0,1,0], 3)),
-  SU.test "countZeros([1,1,1,1,1])" (fn () => SU.assertEqual (countZeros [1,1,1,1,1], 0)),
-  SU.test "countZeros([0,0,0,0,0])" (fn () => SU.assertEqual (countZeros [0,0,0,0,0], 5)),
-  SU.test "countZeros([])" (fn () => SU.assertEqual (countZeros [], 0)),
-  SU.test "countZeros([0])" (fn () => SU.assertEqual (countZeros [0], 1)),
-  SU.test "countZeros([1])" (fn () => SU.assertEqual (countZeros [1], 0))
-]
 
-(* Tests for orList *)
-val test_orList = SU.suite "orList Tests" [
-  SU.test "orList([true, true, true])" (fn () => SU.assertEqual (orList [true, true, true], true)),
-  SU.test "orList([true, false, true])" (fn () => SU.assertEqual (orList [true, false, true], true)),
-  SU.test "orList([false, false, false])" (fn () => SU.assertEqual (orList [false, false, false], false)),
-  SU.test "orList([true, true, false])" (fn () => SU.assertEqual (orList [true, true, false], true)),
-  SU.test "orList([false, false, true])" (fn () => SU.assertEqual (orList [false, false, true], true))
-]
+val testCasesLog2 = [
+  (log2, 1, 0), (* 2^0 = 1 *)
+  (log2, 2, 1), (* 2^1 = 2 *)
+  (log2, 4, 2), (* 2^2 = 4 *)
+  (log2, 8, 3), (* 2^3 = 8 *)
+  (log2, 16, 4), (* 2^4 = 16 *)
+  (log2, 32, 5), (* 2^5 = 32 *)
+  (log2, 64, 6), (* 2^6 = 64 *)
+  (log2, 128, 7), (* 2^7 = 128 *)
+  (log2, 256, 8) (* 2^8 = 256 *)
+];
+runTestCases(testCasesLog2);
 
-(* Tests for andList *)
-val test_andList = SU.suite "andList Tests" [
-  SU.test "andList([true, true, true])" (fn () => SU.assertEqual (andList [true, true, true], true)),
-  SU.test "andList([true, false, true])" (fn () => SU.assertEqual (andList [true, false, true], false)),
-  SU.test "andList([false, false, false])" (fn () => SU.assertEqual (andList [false, false, false], false)),
-  SU.test "andList([true, true, false])" (fn () => SU.assertEqual (andList [true, true, false], false)),
-  SU.test "andList([true, true, true])" (fn () => SU.assertEqual (andList [true, true, true], true))
-]
+val testCasesFactorial = [
+  (factorial, 0, 1), (* 0! = 1 *)
+  (factorial, 1, 1), (* 1! = 1 *)
+  (factorial, 2, 2), (* 2! = 2 *)
+  (factorial, 3, 6), (* 3! = 6 *)
+  (factorial, 4, 24), (* 4! = 24 *)
+  (factorial, 5, 120), (* 5! = 120 *)
+  (factorial, 6, 720), (* 6! = 720 *)
+  (factorial, 7, 5040), (* 7! = 5040 *)
+  (factorial, 8, 40320), (* 8! = 40320 *)
+  (factorial, 10, 3628800) (* 10! = 3628800 *)
+];
+runTestCases(testCasesFactorial);
 
-(* Tests for addLists *)
-val test_addLists = SU.suite "addLists Tests" [
-  SU.test "addLists([1,2,3], [4,5,6])" (fn () => SU.assertEqual (addLists([1,2,3], [4,5,6]), [5,7,9])),
-  SU.test "addLists([1,2], [3,4,5])" (fn () => SU.assertEqual (addLists([1,2], [3,4,5]), [4,6,5])),
-  SU.test "addLists([1,2,3], [4])" (fn () => SU.assertEqual (addLists([1,2,3], [4]), [5,2,3]))
-]
+val testCasesFib = [
+  (* a_n = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55} *)
+  (fib, 0, 0), 
+  (fib, 1, 1), 
+  (fib, 2, 1), 
+  (fib, 3, 2), 
+  (fib, 4, 3), 
+  (fib, 5, 5), 
+  (fib, 6, 8), 
+  (fib, 7, 13), 
+  (fib, 8, 21), 
+  (fib, 9, 34), 
+  (fib, 10, 55)
+];
+runTestCases(testCasesFib);
 
-(* Tests for reverseList *)
-val test_reverseList = SU.suite "reverseList Tests" [
-  SU.test "reverseList([1,2,3])" (fn () => SU.assertEqual (reverseList [1,2,3], [3,2,1])),
-  SU.test "reverseList([])" (fn () => SU.assertEqual (reverseList [], [])),
-  SU.test "reverseList([1])" (fn () => SU.assertEqual (reverseList [1], [1]))
-]
+val testCasesCountZeros = [
+  (countZeros, [0, 1, 0, 1, 0], 3), 
+  (countZeros, [1, 1, 1, 1, 1], 0), 
+  (countZeros, [0, 0, 0, 0, 0], 5), 
+  (countZeros, [], 0), 
+  (countZeros, [0], 1), 
+  (countZeros, [1], 0),
+  (countZeros, [0, 0, 0, 1, 0], 4), 
+  (countZeros, [1, 0, 1, 0, 1], 2), 
+  (countZeros, [0, 0, 1, 0, 0, 0], 5)
+];
+runTestCases(testCasesCountZeros);
 
-(* Tests for removeZeros *)
-val test_removeZeros = SU.suite "removeZeros Tests" [
-  SU.test "removeZeros([0,1,0,2,0,3])" (fn () => SU.assertEqual (removeZeros [0,1,0,2,0,3], [1,2,3])),
-  SU.test "removeZeros([1,2,3])" (fn () => SU.assertEqual (removeZeros [1,2,3], [1,2,3])),
-  SU.test "removeZeros([0,0,0])" (fn () => SU.assertEqual (removeZeros [0,0,0], []))
-]
+val testCasesOrList = [
+  (orList, [true, true, true], true), 
+  (orList, [true, false, true], true), 
+  (orList, [false, false, false], false), 
+  (orList, [true, true, false], true), 
+  (orList, [false, false, true], true), 
+  (orList, [false, false, false, false], false),
+  (orList, [false, true, false, true], true),
+  (orList, [], false), (* Empty list case *)
+  (orList, [false], false), (* Single false element *)
+  (orList, [true], true) (* Single true element *)
+];
+runTestCases(testCasesOrList);
 
-(* Tests for combineLists *)
-val test_combineLists = SU.suite "combineLists Tests" [
-  SU.test "combineLists([1,2,3], [4,5,6], fn x => x)" (fn () => SU.assertEqual (combineLists([1,2,3], [4,5,6], fn x => x), [5,7,9])),
-  SU.test "combineLists([1,2], [3,4], fn x => x * 2)" (fn () => SU.assertEqual (combineLists([1,2], [3,4], fn x => x * 2), [8,12]))
-]
+val testCasesAndList = [
+  (andList, [true, true, true], true), 
+  (andList, [true, false, true], false), 
+  (andList, [false, false, false], false), 
+  (andList, [], true), (* Empty list case *)
+  (andList, [true], true),
+  (andList, [false], false)
+];
+runTestCases(testCasesAndList);
 
-(* Run all tests *)
-val _ = SU.run test_log2
-val _ = SU.run test_factorial
-val _ = SU.run test_fib
-val _ = SU.run test_countZeros
-val _ = SU.run test_orList
-val _ = SU.run test_andList
-val _ = SU.run test_addLists
-val _ = SU.run test_reverseList
-val _ = SU.run test_removeZeros
-val _ = SU.run test_combineLists
+val testCasesAddLists = [
+  (addLists, ([1, 2, 3], [4, 5, 6]), [5, 7, 9]), 
+  (addLists, ([1, 2], [4, 5, 6]), [5, 7, 6]), 
+  (addLists, ([1, 2, 3], []), [1, 2, 3]), 
+  (addLists, ([], [4, 5, 6]), [4, 5, 6]),
+  (addLists, ([], []), [])
+];
+runTestCases(testCasesAddLists);
+
+val testCasesReverseList = [
+  (reverseList, [1, 2, 3], [3, 2, 1]), 
+  (reverseList, [1], [1]), 
+  (reverseList, [], []), 
+  (reverseList, [4, 5, 6, 7], [7, 6, 5, 4])
+];
+runTestCases(testCasesReverseList);
+
+fun removeZeros([]) = []
+  | removeZeros(li) =
+    if hd(li) = 0 then removeZeros(tl(li))
+    else hd(li) :: removeZeros(tl(li));
+
+val testCasesRemoveZeros = [
+  (removeZeros, [0, 1, 0, 2], [1, 2]), 
+  (removeZeros, [0, 0, 0], []), 
+  (removeZeros, [1, 2, 3], [1, 2, 3]), 
+  (removeZeros, [], []), 
+  (removeZeros, [0], [])
+];
+runTestCases(testCasesRemoveZeros);
+
+fun add(x, y) = x + y;
+
+val testCasesCombineLists = [
+  (combineLists, ([1, 2, 3], [4, 5, 6], add), [5, 7, 9]), 
+  (combineLists, ([1, 2], [4, 5, 6], add), [5, 7, 6]), 
+  (combineLists, ([1, 2, 3], [], add), [1, 2, 3]), 
+  (combineLists, ([], [4, 5, 6], add), [4, 5, 6])
+];
+runTestCases(testCasesCombineLists);

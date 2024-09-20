@@ -1,3 +1,5 @@
+tests/**/skip*.sm*
+
 **repo-link.txt
 links.md
 **/*temp.md

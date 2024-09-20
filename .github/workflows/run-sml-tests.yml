@@ -20,6 +20,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install smlnj  # Install SML/NJ
         sudo apt-get install smlsharp  # Install SML#
+        sudo apt-get install llvm-14 # Install LLVM 14
+        sudo apt-get install libmyth # Install mythril
+        # Add the path to the libmyth.so file to the LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+        # Create a symbolic link to the libmyth.so file
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libmyth.so.0 /usr/lib/x86_64-linux-gnu/libmyth.so 
 
     - name: Run SML tests
       run: |

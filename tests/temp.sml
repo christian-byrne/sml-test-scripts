@@ -1,9 +1,3 @@
-structure Test = SMLUnit.Test
-structure Assert = SMLUnit.Assert
-val _ = Assert.assertTrue (true)
-(* open SU *)
-(* val _ = SU.assertEqual (1, 1) *)
-
 use "src/ica05/ica5.sml" (* Test runner called from root of project *)
 
 (* Tests for log2 *)

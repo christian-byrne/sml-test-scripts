@@ -1,6 +1,16 @@
 #!/bin/bash
+
 sudo apt update
+sudo apt-get update
+sudo apt-get install -y software-properties-common
+
 sudo apt install smlsharp
+sudo apt-get install llvm-14
+sudo apt-get install libmyth
+
+echo 'export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+sudo ln -s /usr/lib/x86_64-linux-gnu/libmyth.so.0 /usr/lib/x86_64-linux-gnu/libmyth.so
 
 chmod +x ./start-wiki
 chmod +x ./test

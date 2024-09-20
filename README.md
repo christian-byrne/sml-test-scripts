@@ -1,8 +1,8 @@
 
-ദ്ദി( • ᴗ - ) ✧
+# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ദ്ദി( • ᴗ - ) ✧
 
 
-```shell
+```sh
 chmod +x ./install
 ./install
 ```

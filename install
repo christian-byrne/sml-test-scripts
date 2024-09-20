@@ -22,3 +22,6 @@ npm install
 #npx update-browserlist-db@latest
 cd ..
 
+echo "Set lectura credentials in .env file"
+
+echo -e "\nInstallation complete"

@@ -22,4 +22,9 @@ echo $LECTURA_PASSWORD | clipboard
 
 echo -e "\nPassword copied to clipboard"
 
-scp $1 $UA_NET_ID@lectura.cs.arizona.edu:~/submit-lectura
+# Extract file name
+filename=$(basename -- "$1")
+echo "Copying $filename to lectura..."
+
+# Copy file to lectura
+scp $1 $UA_NET_ID@lectura.cs.arizona.edu:~/$filename

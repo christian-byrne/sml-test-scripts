@@ -36,9 +36,8 @@ fun andList([]) = true
   | andList(boolList) = hd(boolList) andalso andList(tl(boolList));
 
 (* Question 7 *)
-fun addLists([], []) = []
-  | addLists([], li2) = hd(li2) :: addLists([], tl(li2))
-  | addLists(li1, []) = hd(li1) :: addLists(tl(li1), [])
+fun addLists([], li2) = []
+  | addLists(li1, []) = []
   | addLists(li1, li2) = hd(li1) + hd(li2) :: addLists(tl(li1), tl(li2));
 
 (* Question 8 *)
@@ -52,8 +51,6 @@ fun removeZeros([]) = []
     else hd(li) :: removeZeros(tl(li));
 
 (* Question 10 *)
-fun combineLists([], [], operator) = []
-  | combineLists([], li2, operator) = hd(li2) :: combineLists([], tl(li2), operator)
-  | combineLists(li1, [], operator) = hd(li1) :: combineLists(tl(li1), [], operator)
+fun combineLists([], li2, operator) = []
+  | combineLists(li1, [], operator) = []
   | combineLists(li1, li2, operator) = operator(hd(li1), hd(li2)) :: combineLists(tl(li1), tl(li2), operator);
-

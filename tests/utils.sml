@@ -5,7 +5,7 @@ fun valueToStringInt(n: int) = Int.toString(n);
 fun valueToStringBool(true) = "true"
   | valueToStringBool(false) = "false";
 
-(* Function to convert int list to string (example) *)
+(* Function to convert int list to string *)
 fun valueToStringIntList([]) = "[]"
   | valueToStringIntList(lst) = "[" ^ String.concatWith ", " (List.map Int.toString lst) ^ "]";
 
@@ -71,7 +71,6 @@ fun runTestCasesIntListInt([]) = ()
     end;
 
 (* Generic test runner for int list -> int list functions *)
-
 fun runTestCasesIntListIntList([]) = ()
   | runTestCasesIntListIntList(testCaseList) = 
     let 
@@ -90,7 +89,7 @@ fun runTestCasesIntListIntList([]) = ()
       if result <> expected then raise Fail("Test failed") else runTestCasesIntListIntList(tl(testCaseList))
     end;
 
-(* Generic test runner for functions *)
+(* Generic test runner for int list -> int list -> int list -> int list functions *)
 fun runTestCasesIntListIntListOperatorToIntList([]) = ()
   | runTestCasesIntListIntListOperatorToIntList(testCaseList) = 
     let 

@@ -1,3 +1,13 @@
+(* 
+ *  Author: Christian Byrne
+ *  Date: 9/19/24
+ *  ICA 5
+ *  Description: Practice functions in SML, 
+ *               focusing on pattern matching 
+ *               and recursion.
+ *)
+
+
 (* Question 1 *)
 fun log2(1) = 0
   | log2(n) = 1 + log2(n div 2);
@@ -46,3 +56,4 @@ fun combineLists([], [], operator) = []
   | combineLists([], li2, operator) = hd(li2) :: combineLists([], tl(li2), operator)
   | combineLists(li1, [], operator) = hd(li1) :: combineLists(tl(li1), [], operator)
   | combineLists(li1, li2, operator) = operator(hd(li1), hd(li2)) :: combineLists(tl(li1), tl(li2), operator);
+

@@ -30,4 +30,4 @@ jobs:
     - name: Run SML tests
       run: |
         chmod +x test
-        ./test true
+        ./test-smlunit

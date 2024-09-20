@@ -339,26 +339,22 @@ else:
     logging.info(f"Log file location: {str(Path(args.log_file))}")
 
 
-def write_to_cache():
-    try:
-        with open(args.cache_path, "r") as cache_file:
-            cache = json.load(cache_file)
-    except (json.JSONDecodeError, FileNotFoundError):
-        # Previous error wrote corrupted cache file or first run
-        clear_cache()
-        cache = {}
+try:
+    with open(args.cache_path, "r") as cache_file:
+        cache = json.load(cache_file)
+except (json.JSONDecodeError, FileNotFoundError):
+    # Previous error wrote corrupted cache file or first run
+    clear_cache()
+    cache = {}
 
-    def write_(test_set: Set[Path], cache_key: str):
-        cache[cache_key] = str(test_set.pop().resolve()) if test_set else ""
+def write_(test_set: Set[Path], cache_key: str):
+    cache[cache_key] = str(test_set.pop().resolve()) if test_set else ""
 
-    write_(runtime_error_tests, "runtime_error_tests")
-    write_(failed_tests, "failed_tests")
-    write_(passed_tests, "passed_tests")
-    write_(
-        runtime_error_tests.union(failed_tests).union(passed_tests), "all_seen_tests"
-    )
-    with open(args.cache_path, "w") as cache_file:
-        json.dump(cache, cache_file)
-
-
-write_to_cache()
+write_(runtime_error_tests, "runtime_error_tests")
+write_(failed_tests, "failed_tests")
+write_(passed_tests, "passed_tests")
+write_(
+    runtime_error_tests.union(failed_tests).union(passed_tests), "all_seen_tests"
+)
+with open(args.cache_path, "w") as cache_file:
+    json.dump(cache, cache_file)

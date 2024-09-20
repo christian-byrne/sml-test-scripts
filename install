@@ -4,6 +4,7 @@ sudo apt update
 sudo apt-get update
 sudo apt-get install -y software-properties-common
 
+sudo apt install smlnj
 sudo apt install smlsharp
 sudo apt-get install llvm-14
 sudo apt-get install libmyth
@@ -14,6 +15,7 @@ sudo ln -s /usr/lib/x86_64-linux-gnu/libmyth.so.0 /usr/lib/x86_64-linux-gnu/libm
 
 chmod +x ./start-wiki
 chmod +x ./test
+chmod +x ./test-compile
 
 cd wiki
 npm install

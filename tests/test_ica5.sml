@@ -1,29 +1,7 @@
+(* ICA 5 tests *)
+
 use "src/ica05/ica5.sml";
-
-(* TODO: the test runner functions should be moved to a separate file *)
-
-(* Function to color the output in the terminal *)
-fun red(s) = "\027[31m" ^ s ^ "\027[0m"
-fun green(s) = "\027[32m" ^ s ^ "\027[0m"
-
-
-(* Enhanced test case runner with more visual indicators *)
-fun runTestCases([]) = ()
-  | runTestCases(testCaseList) = 
-    let 
-      val (f, param, expected) = hd(testCaseList);
-      val result = f(param);
-      val testMessage = 
-        if result <> expected then
-          red("Test failed\n") ^ 
-          "Expected: " ^ Int.toString(expected) ^ "\n" ^
-          "Actual: " ^ Int.toString(result) ^ "\n\n"
-        else 
-          green("Test passed\n");
-    in
-      print(testMessage);
-      runTestCases(tl(testCaseList))
-    end;
+use "tests/utils.sml";
 
 
 val testCasesLog2 = [
@@ -111,7 +89,9 @@ val testCasesAddLists = [
   (addLists, ([1, 2], [4, 5, 6]), [5, 7, 6]), 
   (addLists, ([1, 2, 3], []), [1, 2, 3]), 
   (addLists, ([], [4, 5, 6]), [4, 5, 6]),
-  (addLists, ([], []), [])
+  (addLists, ([], []), []),
+  (addLists, ([1, 2, 3], [4, 5, 6, 7]), [5, 7, 9, 7]),
+  (addLists, ([1, 2, 3, 4, 5], [4, 5, 6]), [5, 7, 9, 4, 5])
 ];
 runTestCases(testCasesAddLists);
 
@@ -119,7 +99,11 @@ val testCasesReverseList = [
   (reverseList, [1, 2, 3], [3, 2, 1]), 
   (reverseList, [1], [1]), 
   (reverseList, [], []), 
-  (reverseList, [4, 5, 6, 7], [7, 6, 5, 4])
+  (reverseList, [4, 5, 6, 7], [7, 6, 5, 4]),
+  (reverseList, [1, 2, 3, 4, 5], [5, 4, 3, 2, 1]),
+  (reverseList, [1, 2, 3, 4, 5, 6], [6, 5, 4, 3, 2, 1]),
+  (reverseList, [1, 0, 0, 1, 0], [0, 1, 0, 0, 1]),
+  (reverseList, [0, 0, 0], [0, 0, 0])  
 ];
 runTestCases(testCasesReverseList);
 
@@ -133,16 +117,38 @@ val testCasesRemoveZeros = [
   (removeZeros, [0, 0, 0], []), 
   (removeZeros, [1, 2, 3], [1, 2, 3]), 
   (removeZeros, [], []), 
-  (removeZeros, [0], [])
+  (removeZeros, [0], []),
+  (removeZeros, [1], [1]),
+  (removeZeros, [0, 0, 0, 1, 0], [1]),
+  (removeZeros, [1, 0, 1, 0, 1], [1, 1, 1])
 ];
 runTestCases(testCasesRemoveZeros);
 
 fun add(x, y) = x + y;
+fun subtract(x, y) = x - y;
+fun multiply(x, y) = x * y;
+fun doNothing(x, y) = x;
 
 val testCasesCombineLists = [
   (combineLists, ([1, 2, 3], [4, 5, 6], add), [5, 7, 9]), 
   (combineLists, ([1, 2], [4, 5, 6], add), [5, 7, 6]), 
   (combineLists, ([1, 2, 3], [], add), [1, 2, 3]), 
-  (combineLists, ([], [4, 5, 6], add), [4, 5, 6])
+  (combineLists, ([], [4, 5, 6], add), [4, 5, 6]),
+  (combineLists, ([], [], add), []),
+  (combineLists, ([1, 2, 3], [4, 5, 6], subtract), [-3, -3, -3]),
+  (combineLists, ([1, 2], [4, 5, 6], subtract), [-3, -3, 6]),
+  (combineLists, ([1, 2, 3], [], subtract), [1, 2, 3]),
+  (combineLists, ([], [4, 5, 6], subtract), [-4, -5, -6]),
+  (combineLists, ([], [], subtract), []),
+  (combineLists, ([1, 2, 3], [4, 5, 6], multiply), [4, 10, 18]),
+  (combineLists, ([1, 2], [4, 5, 6], multiply), [4, 10, 6]),
+  (combineLists, ([1, 2, 3], [], multiply), [1, 2, 3]),
+  (combineLists, ([], [4, 5, 6], multiply), [4, 5, 6]),
+  (combineLists, ([], [], multiply), []),
+  (combineLists, ([1, 2, 3], [4, 5, 6], doNothing), [5, 7, 9]),
+  (combineLists, ([1, 2], [4, 5, 6], doNothing), [5, 7, 6]),
+  (combineLists, ([1, 2, 3], [], doNothing), [1, 2, 3]),
+  (combineLists, ([], [4, 5, 6], doNothing), [4, 5, 6]),
+  (combineLists, ([], [], doNothing), [])
 ];
 runTestCases(testCasesCombineLists);

@@ -1,0 +1,25 @@
+name: SML Compilation Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check_compilation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SML/NJ
+        run: sudo apt-get install smlnj
+
+      - name: Run SML Compilation Check
+        run: |
+          chmod +x ./check_compilation.sh
+          ./check_compilation.sh

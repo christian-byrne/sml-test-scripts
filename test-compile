@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Define the path to the source folder
+SRC_DIR="./src"
+
+# Find all .sml files in the src folder
+SML_FILES=$(find "$SRC_DIR" -type f -name "*.sml")
+
+# Check if we found any .sml files
+if [ -z "$SML_FILES" ]; then
+  echo "No .sml files found."
+  exit 1
+fi
+
+# Initialize a variable to track if any file fails
+COMPILATION_FAILED=0
+
+# Loop through each .sml file and try to compile it
+for SML_FILE in $SML_FILES; do
+  echo "Checking compilation for: $SML_FILE"
+
+  # Run the file in the sml interpreter and capture the output
+  OUTPUT=$(sml < "$SML_FILE" 2>&1)
+
+  # Check if the output contains specific error keywords such as "Error:"
+  if echo "$OUTPUT" | grep -i "Error:"; then
+    echo "Compilation failed for: $SML_FILE"
+    echo "Error details:"
+    echo "$OUTPUT" | grep -A 5 -i "Error:"  # Display the error message and a few lines after it for context
+    COMPILATION_FAILED=1
+  else
+    echo "Compilation successful for: $SML_FILE"
+  fi
+done
+
+# Exit with error if any file failed
+if [ $COMPILATION_FAILED -ne 0 ]; then
+  echo "One or more files failed to compile."
+  exit 1
+else
+  echo "All files compiled successfully."
+  exit 0
+fi

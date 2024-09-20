@@ -1,0 +1,158 @@
+
+MLTON               := mlton
+MLTON_FLAGS         := 
+
+PREFIX              := /usr/local/mlton
+BINDIR              := $(PREFIX)/bin
+LIBDIR              := $(PREFIX)/lib
+DOCDIR              := $(PREFIX)/doc
+
+SMLDOC              := smldoc
+SMLDOC_ARGFILE      := src/smldoc.cfg
+
+SMLUNIT_LIB         := bin/.smlunit-lib.dummy
+SMLUNIT_LIB_COMPAT  := bin/.smlunitlib.dummy
+
+TEST_TARGET         := bin/smlunit-src-test \
+                       bin/smlunit-basis-test
+
+EXAMPLE_TARGET      := bin/smlunit-example
+
+TEST_MLB            := src/test/sources.mlb \
+                       basis/test/sources.mlb
+
+EXAMPLE_MLB         := example/sources.mlb
+
+SMLUNIT_MLB         := smlunit-lib.mlb \
+                       smlunitlib.mlb
+
+DEPENDS             := $(SMLUNIT_MLB:.mlb=.mlb.d)
+
+TEST_DEPENDS        := $(TEST_MLB:.mlb=.mlb.d)
+
+EXAMPLE_DEPENDS     := $(EXAMPLE_MLB:.mlb=.mlb.d)
+
+SMLUNIT_LIB_DIR     := $(shell readlink -f .)
+
+
+all: smlunit-lib
+
+
+.PHONY: smlunit-lib-nodoc
+smlunit-lib-nodoc: $(SMLUNIT_LIB) $(SMLUNIT_LIB_COMPAT)
+
+
+.PHONY: smlunit-lib
+smlunit-lib: smlunit-lib-nodoc doc
+
+
+$(SMLUNIT_LIB) $(SMLUNIT_LIB_COMPAT): bin/.%.dummy: %.mlb
+	@echo "  [MLTON] $@"
+	@$(MLTON) $(MLTON_FLAGS) -stop tc $<
+	@echo "typecheck dummy with: $(MLTON) $(MLTON_FLAGS) -stop tc $<" > $@
+
+
+$(EXAMPLE_MLB:.mlb=.mlb.d): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)"
+%.mlb.d: %.mlb
+	@echo "  [GEN] $@"
+	@$(SHELL) -ec '$(MLTON) $(MLTON_FLAGS) -stop f $< \
+		| sed -e "1i$(<:.mlb=) $@:\\\\" -e "s|.*|  & \\\\|" -e "\$$s| \\\\||" > $@; \
+		[ -s $@ ]'
+
+
+ifeq ($(findstring clean,$(MAKECMDGOALS)),)
+  include $(DEPENDS)
+endif
+
+
+ifneq ($(findstring test,$(MAKECMDGOALS)),)
+  include $(TEST_DEPENDS)
+endif
+
+
+ifneq ($(findstring example,$(MAKECMDGOALS)),)
+  include $(EXAMPLE_DEPENDS)
+endif
+
+
+.PHONY: install-nodoc
+install-nodoc: $(SMLUNIT_LIB) $(SMLUNIT_LIB_COMPAT)
+	@install -d $(LIBDIR)/SMLUnit
+	@$(MLTON) $(MLTON_FLAGS) -stop f smlunit-lib.mlb | sed -e "1i./smlunitlib.mlb" | \
+	while read file; do \
+		if expr $$(readlink -f $$file) : ^$$(pwd) >/dev/null; then \
+			cp --parents $$(realpath --relative-to=$$(pwd) $$file) $(LIBDIR)/SMLUnit; \
+			echo -n . ; \
+		fi; \
+	done
+	@echo "Installation has been completed."
+	@echo "Add the entry to your mlb path map file:"
+	@echo ""
+	@echo "  SMLUNIT_LIB $(LIBDIR)/SMLUnit"
+	@echo ""
+
+
+.PHONY: install
+install: install-doc install-nodoc
+
+
+.PHONY: doc
+doc:
+	@echo "  [SMLDoc]"
+	@$(RM) -r doc/api
+	@install -d doc/api
+	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d doc/api
+
+
+.PHONY: install-doc
+install-doc: doc
+	@install -d $(DOCDIR)
+	@cp -prT doc $(DOCDIR)/smlunit-lib
+	@echo "================================================================"
+	@echo "Generated API Documents of SMLUnit"
+	@echo "\t$(DOCDIR)/smlunit-lib"
+	@echo "================================================================"
+
+
+$(EXAMPLE_MLB:.mlb=): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)"
+$(TEST_MLB:.mlb=) $(EXAMPLE_MLB:.mlb=): %: %.mlb
+	@echo "  [MLTON] $@"
+	@$(MLTON) $(MLTON_FLAGS) -output $@ $<
+
+
+$(TEST_TARGET): bin/smlunit-%-test: %/test/sources
+	@echo "  [CP] $@"
+	@cp $< $@
+
+
+.PHONY: test
+test: $(TEST_TARGET)
+	@for exe in $^;do \
+	   echo "$${exe}" ; \
+	   $${exe} ; \
+	done
+
+
+$(EXAMPLE_TARGET): example/sources
+	@echo "  [CP] $@"
+	@cp $< $@
+
+
+.PHONY: example
+example: $(EXAMPLE_TARGET)
+	./$(EXAMPLE_TARGET)
+
+
+.PHONY: clean
+clean:
+	-$(RM) $(SMLUNIT_LIB)
+	-$(RM) $(SMLUNIT_LIB_COMPAT)
+	-$(RM) $(DEPENDS)
+	-$(RM) $(TEST_TARGET)
+	-$(RM) $(TEST_MLB:.mlb=)
+	-$(RM) $(TEST_DEPENDS)
+	-$(RM) $(EXAMPLE_TARGET)
+	-$(RM) $(EXAMPLE_MLB:.mlb=)
+	-$(RM) $(EXAMPLE_DEPENDS)
+	-$(RM) -r doc/api
+

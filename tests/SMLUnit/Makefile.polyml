@@ -1,0 +1,118 @@
+
+POLYML         := poly
+POLYMLC        := polyc
+POLYMLFLAGS    := -q --error-exit --eval 'PolyML.suffixes := ".sig"::(!PolyML.suffixes)'
+
+PREFIX         := /usr/local/polyml
+LIBDIR         := $(PREFIX)/lib
+DOCDIR         := $(PREFIX)/doc
+
+SMLDOC         := smldoc
+SMLDOC_ARGFILE := src/smldoc.cfg
+
+SRC            := $(wildcard src/main/*.sml src/main/*.sig)
+TEST_SRC       := $(wildcard src/test/*.sml)
+BASIS_TEST_SRC := $(wildcard basis/test/*.sml basis/test/*.sig)
+EXAMPLE_SRC    := $(wildcard example/*.sml example/*.sig)
+
+SMLUNIT_LIB    := smlunit-lib.poly
+TEST           := bin/smlunit-test-poly bin/smlunit-basis-test-poly
+EXAMPLE        := bin/smlunit-example-poly
+
+define export-module
+@echo "  [POLYML] $@"
+@echo "" | $(POLYML) $(POLYMLFLAGS) \
+	$(foreach dep,$(3),--eval 'PolyML.loadModule "$(dep)"') \
+	--eval 'PolyML.make "$(2)"' \
+	--eval 'PolyML.export("$@", $(1))'
+endef
+
+
+all: smlunit-lib
+
+
+.PHONY: smlunit-lib-nodoc
+smlunit-lib-nodoc: $(SMLUNIT_LIB)
+
+
+.PHONY: smlunit-lib
+smlunit-lib: smlunit-lib-nodoc doc
+
+
+$(SMLUNIT_LIB): export.sml $(SRC)
+	@echo "  [POLYML] $@"
+	@echo "" | $(POLYML) $(POLYMLFLAGS) \
+		--eval 'PolyML.make "src/main"' \
+		--use export.sml \
+		--eval 'PolyML.SaveState.saveModule ("$@", SMLUnit)'
+
+
+bin/smlunit-test-poly.o: $(SMLUNIT_LIB) $(TEST_SRC)
+	$(call export-module,TestMain.test,src/test,./$<)
+
+
+bin/smlunit-basis-test-poly.o: $(SMLUNIT_LIB) $(BASIS_TEST_SRC)
+	$(call export-module,TestMain.test,basis/test,./$<)
+
+
+$(EXAMPLE).o: $(SMLUNIT_LIB) $(EXAMPLE_SRC)
+	$(call export-module,Main.main'\'',example,./$<)
+
+
+$(TEST) $(EXAMPLE): %: %.o
+	@echo "  [POLYC] $@"
+	@$(POLYMLC) -o $@ $^
+
+
+.PHONY: install-nodoc
+install-nodoc: $(SMLUNIT_LIB)
+	@install -D -m 644 -t $(LIBDIR)/smlunit-lib $(SMLUNIT_LIB)
+
+
+.PHONY: install
+install: install-doc install-nodoc
+
+
+.PHONY: doc
+doc:
+	@echo "  [SMLDoc]"
+	@$(RM) -r doc/api
+	@install -d doc/api
+	@$(SMLDOC) -c UTF-8 -a $(SMLDOC_ARGFILE) -d doc/api
+
+
+.PHONY: install-doc
+install-doc: doc
+	@install -d $(DOCDIR)
+	@cp -prT doc $(DOCDIR)/smlunit-lib
+	@echo "================================================================"
+	@echo "Generated API Documents of SMLUnit"
+	@echo "\t$(DOCDIR)/smlunit-lib"
+	@echo "================================================================"
+
+
+.PHONY: test
+test: $(TEST)
+	@for exe in $^;do \
+		echo "$${exe}" ; \
+		$${exe} ; \
+	done
+
+
+.PHONY: example
+example: $(EXAMPLE)
+	@for exe in $^;do \
+		echo "$${exe}" ; \
+		$${exe} ; \
+	done
+
+
+.PHONY: clean
+clean:
+	-$(RM) $(SMLUNIT_LIB)
+	-$(RM) -r doc/api
+	-$(RM) $(TEST)
+	-$(RM) $(TEST:=.o)
+	-$(RM) $(EXAMPLE)
+	-$(RM) $(EXAMPLE:=.o)
+

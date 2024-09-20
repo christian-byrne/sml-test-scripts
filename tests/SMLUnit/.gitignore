@@ -1,0 +1,15 @@
+doc/api
+# depend
+*.cm.d
+*.mlb.d
+# object
+*.o
+# sml/nj
+bin/
+.cm/
+# polyml
+smlunit-lib.poly
+# test executable
+smlunit-test-poly
+smlunit-basis-test-poly
+smlunit-example-poly

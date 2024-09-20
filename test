@@ -19,6 +19,9 @@ if [ -z "$TEST_FILES" ]; then
   exit 1
 fi
 
+# Initialize a variable to track if any test fails
+TEST_FAILED=0
+
 # Load each test file in the SML interpreter
 for TEST_FILE in $TEST_FILES; do
   echo "Running tests in: $TEST_FILE"
@@ -29,9 +32,27 @@ for TEST_FILE in $TEST_FILES; do
     export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
     # smlsharp < "$TESTS_DIR/SMLUnit/smlunit-lib.smi"
     smlsharp < "$TEST_FILE"
+    EXIT_CODE=$?
 
   # Else, just use sml to load the test file
   else
     sml < "$TEST_FILE"
+    EXIT_CODE=$?
+  fi
+
+  # If the test failed (non-zero exit code), mark it as failed
+  if [ $EXIT_CODE -ne 0 ]; then
+    echo "Test failed in: $TEST_FILE"
+    TEST_FAILED=1
   fi
 done
+
+# Exit with error if any tests failed
+if [ $TEST_FAILED -ne 0 ]; then
+  echo "Some tests failed."
+  exit 1
+else
+  echo "All tests passed."
+  exit 0
+fi
+

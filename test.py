@@ -143,7 +143,7 @@ rich_handler = RichHandler(
     rich_tracebacks=True,
     tracebacks_show_locals=True,
     tracebacks_theme="solarized",
-    markup=False,
+    markup=True,
 )
 formatter_stdout = logging.Formatter(
     args.log_cli_format, datefmt=args.log_cli_date_format
@@ -235,7 +235,7 @@ logging.info(f"Found {len(tests)} tests")
 
 
 def format_test_list(tests: Set[Path]) -> str:
-    return "\n".join([str(test) for test in tests])
+    return "\n\t".join([test.name for test in tests])
 
 
 if args.collect_only:
@@ -244,12 +244,14 @@ if args.collect_only:
     exit(0)
 
 # Set environemnt vars that the sml test runner uses
-os.environ["SML_TEST_EXITFIRST"] = str(args.exitfirst)
+if not args.maxfail:
+    os.environ["SML_TEST_EXITFIRST"] = "true"
+else:
+    os.environ["SML_TEST_EXITFIRST"] = str(args.exitfirst)
 maxfail = args.maxfail or len(tests) + 8
 if args.sw_skip:
     maxfail = 1  # Only skip the first failing test if --sw-skip is set
 os.environ["SML_TEST_MAXFAIL"] = str(maxfail)
-
 
 def check_for_runtime_error(output: str) -> bool:
     if "uncaught exception" in output:
@@ -284,59 +286,57 @@ def run_test(test_path: Path):
             f"Expected test_path to be of type Path, but got {type(test_path)}"
         )
 
-    logging.info("Running tests")
-    logging.debug(f"All Tests: {tests}")
-    for test in tests:
-        logging.info(f"Running test {test.name}")
-        logging.debug(f"Command used to run test: 'sml < {test}'")
-        test_file_obj = open(test, "r")
-        process = subprocess.Popen(
-            ["sml"],
-            stdin=test_file_obj,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            text=True,
-        )
-        output, error = process.communicate()
-        if output:
-            formatted_output = output.replace("\n", "\n\t\t")
-            if LogLevel[args.log_cli_level].value <= LogLevel.INFO.value:
-                print(f"Output: {formatted_output}")
-            if check_for_compile_error(output):
-                compile_error_tests.add(test)
-                logging.critical(f"Compile error in test {test}")
-            if check_for_runtime_error(output):
-                runtime_error_tests.add(test)
-                logging.error(f"Runtime error in test {test}")
-            elif "Test failed" in output:
-                failed_tests.add(test)
-            else:
-                passed_tests.add(test)
-        if error:
-            logging.critical("Error with test runner script")
-            print(f"Error: {error}")
+    logging.info(f"Running test {test_path.name}")
+    logging.debug(f"Command used to run test: 'sml < {test_path}'")
+    test_file_obj = open(test_path, "r")
+    process = subprocess.Popen(
+        ["sml"],
+        stdin=test_file_obj,
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+    output, error = process.communicate()
+    if output:
+        formatted_output = output.replace("\n", "\n\t\t")
+        if LogLevel[args.log_cli_level].value <= LogLevel.INFO.value:
+            print(f"Output: {formatted_output}")
+        if check_for_compile_error(output):
+            compile_error_tests.add(test_path)
+            logging.critical(f"Compile error in test {test_path}")
+        if check_for_runtime_error(output):
+            runtime_error_tests.add(test_path)
+            logging.error(f"Runtime error in test {test_path}")
+        elif "Test failed" in output:
+            failed_tests.add(test_path)
+        else:
+            passed_tests.add(test_path)
+    if error:
+        logging.critical("Error with test runner script")
+        print(f"Error: {error}")
 
-
+logging.info("Running tests")
+logging.debug(f"All Tests: {tests}")
 for test in tests:
     run_test(test)
 if passed_tests:
-    logging.info(f"Passed tests: {format_test_list(passed_tests)}")
+    logging.info(f"Passed all tests in files:\n\t[green]{format_test_list(passed_tests)}[/green]")
 if compile_error_tests:
     logging.critical(
-        f"Test run failed because of compilation error in tests: {format_test_list(compile_error_tests)}"
+        f"Compilation error in test files:[bold red]\n\t{format_test_list(compile_error_tests)}[/bold red]"
     )
 if runtime_error_tests:
     logging.error(
-        f"Test run failed because of runtimes errors in tests: {format_test_list(runtime_error_tests)}"
+        f"Runtimes errors in test files:\n\t[red]{format_test_list(runtime_error_tests)}[/red]"
     )
 if failed_tests:
-    logging.warning(f"Failed tests: {format_test_list(failed_tests)}")
+    logging.warning(f"Failed tests in files:\n\t[dim red]{format_test_list(failed_tests)}[/dim red]")
 passed_all = len(passed_tests) == len(tests)
 if passed_all:
     logging.info("All tests passed!")
 else:
     logging.info(f"View the log file for more information on the failed tests.")
-    logging.info(f"Log file location: {args.log_file}")
+    logging.info(f"Log file location: {str(Path(args.log_file))}")
 
 
 def write_to_cache():

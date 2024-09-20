@@ -1,5 +1,8 @@
 
+ദ്ദി( • ᴗ - ) ✧
+
+
 ```shell
-chmod +x ./install.sh
-./install.sh
+chmod +x ./install
+./install
 ```

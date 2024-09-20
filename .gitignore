@@ -1,5 +1,7 @@
 .env
 tests/**/skip*.sm*
+test-smlunit
+install-smlsharp
 
 **repo-link.txt
 links.md

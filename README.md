@@ -1,8 +1,9 @@
 
-# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ദ്ദി( • ᴗ - ) ✧
 
+## Run Tests
 
 ```sh
-chmod +x ./install
-./install
+chmod +x ./test
+./test
+
 ```

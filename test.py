@@ -217,18 +217,23 @@ for test in tests_path.rglob(args.expression):
             if test == Path(ignore):
                 logging.info(f"Ignoring test {test} because of ignore {ignore}")
                 continue
+            
     # If --last-failed is set, only include the tests that are in the 'failed_tests' cache
     if args.lf and test not in last_failed_tests:
         continue
+
+    logging.info(f"Found test {test}")
+
     # If --failed-first is set and test was failed previously, prepend it to the test list so it is run first
     if args.ff and test in last_failed_tests:
-        tests.appendleft(test)
+        tests.appendleft(Path(test))
         continue
+
     # If --new-first is set and test is new, prepend it to the test list so it is run first
     if args.nf and test not in all_seen_tests:
-        tests.appendleft(test)
+        tests.appendleft(Path(test))
         continue
-    logging.info(f"Found test {test}")
+    
     tests.append(Path(test))
 
 logging.info(f"Found {len(tests)} tests")
@@ -282,7 +287,7 @@ passed_tests = set()
 def run_test(test_path: Path):
     global failed_tests
     if not isinstance(test_path, Path):
-        raise ValueError(
+        raise TypeError(
             f"Expected test_path to be of type Path, but got {type(test_path)}"
         )
 
@@ -348,7 +353,11 @@ except (json.JSONDecodeError, FileNotFoundError):
     cache = {}
 
 def write_(test_set: Set[Path], cache_key: str):
-    cache[cache_key] = str(test_set.pop().resolve()) if test_set else ""
+    if len(test_set) == 0:
+        cache[cache_key] = []
+        return
+    
+    cache[cache_key] = [str(test.resolve()) for test in test_set]
 
 write_(runtime_error_tests, "runtime_error_tests")
 write_(failed_tests, "failed_tests")

@@ -1,6 +1,36 @@
 #!/bin/bash
 
+sudo apt update
+
+# Function to install Node.js and npm
+install_node_npm() {
+    echo "Node.js and npm not found. Installing..."
+    # Add NodeSource repository and install Node.js (this installs npm automatically)
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    sudo apt install -y nodejs
+    echo "Node.js and npm installed successfully."
+}
+
+# Check if Node.js is installed
+if ! command -v node &> /dev/null; then
+    install_node_npm
+else
+    echo "Node.js is already installed. Version: $(node -v)"
+fi
+
+# Check if npm is installed
+if ! command -v npm &> /dev/null; then
+    echo "npm not found, but Node.js is installed. Installing npm..."
+    sudo apt install -y npm
+    echo "npm installed successfully."
+else
+    echo "npm is already installed. Version: $(npm -v)"
+fi
+
+# Start the wiki server
 # https://github.com/smlhelp/book
 npm install
 npm start
+
+# Open the wiki in the default web browser
 xdg-open http://localhost:3000/book/

@@ -1,24 +1,24 @@
 
 
-<!-- > [!NOTE]
+> [!NOTE]
 > 
-> By default, tests are discovered by looking for sml files that start with `test_` in the `tests` directory. -->
+> By default, tests are discovered by looking for sml files that start with `test_` in the `tests` directory.
 
-Setup:
+## Setup
 
 ```sh
 chmod +x ./install
 ./install
 ```
 
-Run tests:
+## Run tests
 
 ```
 chmod +x ./test
 ./test
 ```
 
-Options
+## Options
 
 ```sh
 usage: test.py [-h] [-x] [--cache-path CACHE_PATH] [--cache-show [CACHE_SHOW]] [--cache-clear] [-k EXPRESSION]
@@ -68,10 +68,11 @@ options:
 
 ```
 
-<!-- 
+
 ## Writing Tests
 
-Source file:
+
+##### Example Source file:
 
 ```sml
 (* src/program.sml *)
@@ -80,7 +81,7 @@ fun factorial(0) = 1
   | factorial(n) = n * factorial(n - 1);
 ```
 
-Test file:
+##### Example Test file:
 
 ```sml
 (* tests/test_program_factorial.sml *)
@@ -97,4 +98,38 @@ val testCasesFactorial = [
 ];
 
 runTestCasesIntInt(testCasesFactorial);
-``` -->
+```
+
+## SML Wiki/Reference
+
+Builds local SML wiki site and opens it in the browser.
+
+```sh
+chmod +x ./start-wiki
+./start-wiki
+```
+
+Changes can be made to the wiki by changing files in [wiki/docs](./wiki/docs)
+
+
+## Lectura Scripts
+
+Set credentials in `.env` file ([`.env.example`](./.env.example))
+
+##### Connect Lectura
+
+```sh
+chmod +x ./connect-lectura
+./connect-lectura
+```
+
+Press `Ctrl+V`
+
+##### Submit Lectura
+
+```sh
+chmod +x ./submit-lectura
+./submit-lectura <path-to-file>
+```
+
+Press `Ctrl+V`

@@ -353,7 +353,11 @@ except (json.JSONDecodeError, FileNotFoundError):
     cache = {}
 
 def write_(test_set: Set[Path], cache_key: str):
-    cache[cache_key] = str(test_set.pop().resolve()) if test_set else ""
+    if len(test_set) == 0:
+        cache[cache_key] = []
+        return
+    
+    cache[cache_key] = [str(test.resolve()) for test in test_set]
 
 write_(runtime_error_tests, "runtime_error_tests")
 write_(failed_tests, "failed_tests")

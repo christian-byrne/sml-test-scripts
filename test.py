@@ -223,7 +223,7 @@ for test in tests_path.rglob(args.expression):
         continue
 
     logging.info(f"Found test {test}")
-    
+
     # If --failed-first is set and test was failed previously, prepend it to the test list so it is run first
     if args.ff and test in last_failed_tests:
         tests.appendleft(Path(test))
@@ -287,7 +287,7 @@ passed_tests = set()
 def run_test(test_path: Path):
     global failed_tests
     if not isinstance(test_path, Path):
-        raise ValueError(
+        raise TypeError(
             f"Expected test_path to be of type Path, but got {type(test_path)}"
         )
 

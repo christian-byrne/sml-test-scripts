@@ -6,6 +6,9 @@ sudo apt install smlnj
 # Set permissions
 chmod +x ./test
 chmod +x ./test-compile
+chmod +x ./connect-lectura
+chmod +x ./submit-lectura
+chmod +x ./start-wiki
 
 # Get python path
 PYTHON_PATH=$(which python3)
@@ -13,5 +16,5 @@ PYTHON_PATH=$(which python3)
 # Install python dependencies
 $PYTHON_PATH -m pip install -r requirements.txt
 
-echo "Set lectura credentials in .env file"
+echo -e "Set lectura credentials in .env file\nSee .env.example for reference"
 echo -e "\nInstallation complete"

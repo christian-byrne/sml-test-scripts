@@ -191,33 +191,57 @@ if not tests_path.is_dir():
 logging.debug(f"Collecting tests from {tests_path}")
 
 try:
+    all_seen_tests = set()
+    last_failed_tests = set()
     with open(args.cache_path, "r") as cache_file:
+        cache_ = json.load(cache_file)
+        logging.debug(f"Cache file on start: {cache_}")
+        logging.debug(f"all_seen_tests in cache: {cache_.get('all_seen_tests')}")
+        logging.debug(f"failed_tests in cache: {cache_.get('failed_tests')}")
         all_seen_tests = set(
-            Path(test) for test in json.load(cache_file).get("all_seen_tests", [])
+            Path(test) for test in cache_.get("all_seen_tests", [])
         )
         last_failed_tests = set(
-            Path(test) for test in json.load(cache_file).get("failed_tests", [])
+            Path(test) for test in cache_.get("failed_tests", [])
         )
-except:
-    pass
+except Exception as e:
+    logging.error(f"Error reading cache file: {e}")
+
+    # Fall back to empty sets
+    if not all_seen_tests:
+        all_seen_tests = set()
+    if not last_failed_tests:
+        last_failed_tests = set()
 
 for test in tests_path.rglob(args.expression):
     if not test.is_file():
         continue
+
+    skip_test = False
     # Ignore glob
     if args.ignore_glob:
+        logging.debug(f"Checking ignore glob {args.ignore_glob} for test {test}")
         for ignore_glob in args.ignore_glob:
             if test.match(ignore_glob):
                 logging.info(
                     f"Ignoring test {test} because of ignore glob {ignore_glob}"
                 )
-                continue
+                skip_test = True
+                break
+    if skip_test:
+        continue
+
+    # Ignore
     if args.ignore:
+        logging.debug(f"Checking ignore {args.ignore} for test {test}")
         for ignore in args.ignore:
             if test == Path(ignore):
                 logging.info(f"Ignoring test {test} because of ignore {ignore}")
-                continue
-            
+                skip_test = True
+                break
+    if skip_test:
+        continue
+     
     # If --last-failed is set, only include the tests that are in the 'failed_tests' cache
     if args.lf and test not in last_failed_tests:
         continue
@@ -309,7 +333,7 @@ def run_test(test_path: Path):
         if check_for_compile_error(output):
             compile_error_tests.add(test_path)
             logging.critical(f"Compile error in test {test_path}")
-        if check_for_runtime_error(output):
+        elif check_for_runtime_error(output):
             runtime_error_tests.add(test_path)
             logging.error(f"Runtime error in test {test_path}")
         elif "Test failed" in output:

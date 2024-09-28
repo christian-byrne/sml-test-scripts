@@ -21,7 +21,7 @@ chmod +x ./test
 ## Options
 
 ```sh
-usage: test.py [-h] [-x] [--cache-path CACHE_PATH] [--cache-show [CACHE_SHOW]] [--cache-clear] [-k EXPRESSION]
+usage: ./test  [-h] [-x] [--cache-path CACHE_PATH] [--cache-show [CACHE_SHOW]] [--cache-clear] [-k EXPRESSION]
                [--lf] [--ff] [--nf] [--sw-skip] [--maxfail MAXFAIL] [--collect-only] [--ignore IGNORE]
                [--ignore-glob IGNORE_GLOB] [--rootdir ROOTDIR] [--log-file LOG_FILE]
                [--log-file-level {NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL}]
@@ -105,7 +105,6 @@ runTestCasesIntInt(testCasesFactorial);
 Builds local SML wiki site and opens it in the browser.
 
 ```sh
-chmod +x ./start-wiki
 ./start-wiki
 ```
 
@@ -119,7 +118,6 @@ Set credentials in `.env` file ([`.env.example`](./.env.example))
 ##### Connect Lectura
 
 ```sh
-chmod +x ./connect-lectura
 ./connect-lectura
 ```
 
@@ -128,7 +126,6 @@ Press `Ctrl+V`
 ##### Submit Lectura
 
 ```sh
-chmod +x ./submit-lectura
 ./submit-lectura <path-to-file>
 ```
 

@@ -328,7 +328,7 @@ def run_test(test_path: Path):
     output, error = process.communicate()
     if output:
         formatted_output = output.replace("\n", "\n\t\t")
-        if LogLevel[args.log_cli_level].value <= LogLevel.INFO.value:
+        if LogLevel[args.log_cli_level].value <= LogLevel.ERROR.value:
             print(f"Output: {formatted_output}")
         if check_for_compile_error(output):
             compile_error_tests.add(test_path)

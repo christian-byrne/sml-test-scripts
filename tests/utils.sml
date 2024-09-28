@@ -13,6 +13,48 @@ fun valueToStringIntList([]) = "[]"
 fun red(s) = "\027[31m" ^ s ^ "\027[0m"
 fun green(s) = "\027[32m" ^ s ^ "\027[0m";
 
+(* Generic test runner for int * int * int -> bool functions *)
+fun runTestCasesIntIntIntBool([]) = ()
+  | runTestCasesIntIntIntBool(testCaseList) = 
+    let 
+      val (f, param1, param2, param3, expected) = hd(testCaseList);
+      val result = f(param1, param2, param3);
+      val testMessage = 
+        if result <> expected then
+          red("Test failed\n") ^ 
+          "Arguments: " ^ valueToStringInt(param1) ^ ", " ^ valueToStringInt(param2) ^ ", " ^ valueToStringInt(param3) ^ "\n" ^
+          "Expected: " ^ valueToStringBool(expected) ^ "\n" ^
+          "Actual: " ^ valueToStringBool(result) ^ "\n\n"
+        else 
+          green("Test passed\n");
+    in
+      print(testMessage);
+      (* Error code so GH actions can detect if a test failed *)
+      if result <> expected then raise Fail("Test failed") else runTestCasesIntIntIntBool(tl(testCaseList))
+    end;
+
+(* Generic test runner for real * real * real -> bool functions *)
+fun runTestCasesRealRealRealBool([]) = ()
+  | runTestCasesRealRealRealBool(testCaseList) = 
+    let 
+      val (f, param1, param2, param3, expected) = hd(testCaseList);
+      val result = f(param1, param2, param3);
+      val testMessage = 
+        if result <> expected then
+          red("Test failed\n") ^ 
+          "Arguments: " ^ Real.toString(param1) ^ ", " ^ Real.toString(param2) ^ ", " ^ Real.toString(param3) ^ "\n" ^
+          "Expected: " ^ valueToStringBool(expected) ^ "\n" ^
+          "Actual: " ^ valueToStringBool(result) ^ "\n\n"
+        else 
+          green("Test passed\n");
+    in
+      print(testMessage);
+      (* Error code so GH actions can detect if a test failed *)
+      if result <> expected then raise Fail("Test failed") else runTestCasesRealRealRealBool(tl(testCaseList))
+    end;
+
+(* Generic test runner for int * int -> bool functions *)
+
 (* Generic test runner for int -> int functions *)
 fun runTestCasesIntInt([]) = ()
   | runTestCasesIntInt(testCaseList) = 

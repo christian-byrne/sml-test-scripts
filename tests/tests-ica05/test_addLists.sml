@@ -12,4 +12,6 @@ val testCasesAddLists = [
   (addLists, ([1, 2, 3], [4, 5, 6, 7]), [5, 7, 9]),
   (addLists, ([1, 2, 3, 4, 5], [4, 5, 6, 0, 0]), [5, 7, 9, 4, 5])
 ];
-runTestCasesIntListIntList(testCasesAddLists);
+
+fun addListsParamsToString(li1, li2) = "addLists(" ^ valueToStringIntList(li1) ^ ", " ^ valueToStringIntList(li2) ^ ")";
+runTests(testCasesAddLists, addListsParamsToString, valueToStringIntList);

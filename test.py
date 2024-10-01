@@ -56,6 +56,9 @@ parser.add_argument(
     "--nf", "--new-first", action="store_true", help="Run tests from new files first."
 )
 parser.add_argument(
+    "--nl", "--new-last", action="store_true", help="Run tests from new files last."
+)
+parser.add_argument(
     "--sw-skip",
     "--stepwise-skip",
     action="store_true",
@@ -198,12 +201,8 @@ try:
         logging.debug(f"Cache file on start: {cache_}")
         logging.debug(f"all_seen_tests in cache: {cache_.get('all_seen_tests')}")
         logging.debug(f"failed_tests in cache: {cache_.get('failed_tests')}")
-        all_seen_tests = set(
-            Path(test) for test in cache_.get("all_seen_tests", [])
-        )
-        last_failed_tests = set(
-            Path(test) for test in cache_.get("failed_tests", [])
-        )
+        all_seen_tests = set(Path(test) for test in cache_.get("all_seen_tests", []))
+        last_failed_tests = set(Path(test) for test in cache_.get("failed_tests", []))
 except Exception as e:
     logging.error(f"Error reading cache file: {e}")
 
@@ -241,7 +240,7 @@ for test in tests_path.rglob(args.expression):
                 break
     if skip_test:
         continue
-     
+
     # If --last-failed is set, only include the tests that are in the 'failed_tests' cache
     if args.lf and test not in last_failed_tests:
         continue
@@ -257,10 +256,14 @@ for test in tests_path.rglob(args.expression):
     if args.nf and test not in all_seen_tests:
         tests.appendleft(Path(test))
         continue
-    
+
     tests.append(Path(test))
 
 logging.info(f"Found {len(tests)} tests")
+
+# If --new-last is set, sort by mtime
+if args.nl:
+    tests = deque(sorted(tests, key=lambda x: x.stat().st_mtime))
 
 
 def format_test_list(tests: Set[Path]) -> str:
@@ -281,6 +284,7 @@ maxfail = args.maxfail or len(tests) + 8
 if args.sw_skip:
     maxfail = 1  # Only skip the first failing test if --sw-skip is set
 os.environ["SML_TEST_MAXFAIL"] = str(maxfail)
+
 
 def check_for_runtime_error(output: str) -> bool:
     if "uncaught exception" in output:
@@ -344,12 +348,15 @@ def run_test(test_path: Path):
         logging.critical("Error with test runner script")
         print(f"Error: {error}")
 
+
 logging.info("Running tests")
 logging.debug(f"All Tests: {tests}")
 for test in tests:
     run_test(test)
 if passed_tests:
-    logging.info(f"Passed all tests in files:\n\t[green]{format_test_list(passed_tests)}[/green]")
+    logging.info(
+        f"Passed all tests in files:\n\t[green]{format_test_list(passed_tests)}[/green]"
+    )
 if compile_error_tests:
     logging.critical(
         f"Compilation error in test files:[bold red]\n\t{format_test_list(compile_error_tests)}[/bold red]"
@@ -359,7 +366,9 @@ if runtime_error_tests:
         f"Runtimes errors in test files:\n\t[red]{format_test_list(runtime_error_tests)}[/red]"
     )
 if failed_tests:
-    logging.warning(f"Failed tests in files:\n\t[dim red]{format_test_list(failed_tests)}[/dim red]")
+    logging.warning(
+        f"Failed tests in files:\n\t[dim red]{format_test_list(failed_tests)}[/dim red]"
+    )
 passed_all = len(passed_tests) == len(tests)
 if passed_all:
     logging.info("All tests passed!")
@@ -376,18 +385,18 @@ except (json.JSONDecodeError, FileNotFoundError):
     clear_cache()
     cache = {}
 
+
 def write_(test_set: Set[Path], cache_key: str):
     if len(test_set) == 0:
         cache[cache_key] = []
         return
-    
+
     cache[cache_key] = [str(test.resolve()) for test in test_set]
+
 
 write_(runtime_error_tests, "runtime_error_tests")
 write_(failed_tests, "failed_tests")
 write_(passed_tests, "passed_tests")
-write_(
-    runtime_error_tests.union(failed_tests).union(passed_tests), "all_seen_tests"
-)
+write_(runtime_error_tests.union(failed_tests).union(passed_tests), "all_seen_tests")
 with open(args.cache_path, "w") as cache_file:
     json.dump(cache, cache_file)

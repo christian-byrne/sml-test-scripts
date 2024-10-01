@@ -240,7 +240,6 @@ for test in tests_path.rglob(args.expression):
                 break
     if skip_test:
         continue
-
     # If --last-failed is set, only include the tests that are in the 'failed_tests' cache
     if args.lf and test not in last_failed_tests:
         continue

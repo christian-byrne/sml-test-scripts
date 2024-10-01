@@ -1,3 +1,5 @@
+(* Test case generator chat session: https://chatgpt.com/c/66f74278-0154-800a-9ca0-abe87126291e *)
+
 (* --------------------------- toString Functions --------------------------- *)
 
 (* Function to convert int to string *)
@@ -16,6 +18,11 @@ fun valueToStringIntList([]) = "[]"
 fun valueToStringBoolList([]) = "[]"
   | valueToStringBoolList(lst) =
       "[" ^ String.concatWith ", " (List.map valueToStringBool lst) ^ "]";
+
+(* Function to convert string list to string *)
+fun valueToStringStringList([]) = "[]"
+  | valueToStringStringList(lst) =
+      "[" ^ String.concatWith ", " lst ^ "]";
 
 (* ------------------------------- Formatters ------------------------------- *)
 

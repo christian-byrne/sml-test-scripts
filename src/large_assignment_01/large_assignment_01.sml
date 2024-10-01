@@ -49,4 +49,48 @@ fun triangleR(a, b, c) =
  *)
  fun cycle(0, li) = li
   | cycle(_, []) = []
-  | cycle(n, x::xs) = cycle(n - 1, xs @ [x]);
+  | cycle(n, x::li) = cycle(n - 1, li @ [x]);
+
+
+(*
+ *  Type: `'a list -> 'a list`
+ *  Description: Mirror the list. You may not use any reverse function
+ *               (even as a helper function).
+ *  Example: mirror [1,2,3,4] → [1,2,3,4,4,3,2,1]
+ *)
+ fun mirror([]) = []
+  | mirror(x::li) = x::mirror(li) @ [x];
+
+
+(*
+ *  Type: `int list * int -> int list`
+ *  Description: Take a list l and an integer n and return a list that
+ *               contains all the elements in l that are greater than
+ *               n. Keep the same relative order of items.
+ *)
+ fun gtList(_, []) = []
+  | gtList(n, x::li) = if x > n then x::gtList(n, li) else gtList(n, li);
+
+
+(*
+ *  Type: `''a list * ''a list -> bool`
+ *  Description: Return true if the first list is a suffix of the
+ *               second list and false otherwise. Do not reverse
+ *               either of the lists.
+ *)
+ fun suffix([], _) = true
+  | suffix(_, []) = false
+  | suffix(li1, li2) =
+    let
+      fun listLength([]) = 0
+        | listLength(x::li) = 1 + listLength(li)
+      fun truncatePrefix(count, x::li) = if count = 0 then x::li else truncatePrefix(count - 1, li)
+      fun suffixEqual([], []) = true
+        | suffixEqual(x::a, y::b) = if x = y then suffixEqual(a, b) else false
+      val truncateCount = listLength(li2) - listLength(li1)
+    in
+      if truncateCount < 0 then false
+      else suffixEqual(li1, truncatePrefix(truncateCount, li2))
+    end;
+
+

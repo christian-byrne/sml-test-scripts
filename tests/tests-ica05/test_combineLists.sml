@@ -9,19 +9,21 @@ fun mockDiv(x, y) = x div y;
 fun doNothing(x, y) = x;
 
 val testCasesCombineLists = [
-  (combineLists, [1, 2, 3], [4, 5, 6], mockAdd, [5, 7, 9]), 
-  (combineLists, [1, 2], [4, 5, 6], mockAdd, [5, 7]), 
-  (combineLists, [], [4, 5, 6], mockModulus, []),
-  (combineLists, [], [], mockModulus, []),
-  (combineLists, [1, 2, 3], [4, 5, 6], mockDiv, [0, 0, 0]),
-  (combineLists, [1, 2], [4, 5, 6], mockDiv, [0, 0]),
-  (combineLists, [8, 8, 3], [4], mockDiv, [2]),
-  (combineLists, [4], [4, 5, 6], mockDiv, [1]),
-  (combineLists, [], [], mockDiv, []),
-  (combineLists, [1, 2, 3], [4, 5, 6], doNothing, [1, 2, 3]),
-  (combineLists, [1, 2], [4, 5, 6], doNothing, [1, 2]),
-  (combineLists, [1, 2, 3], [], doNothing, []),
-  (combineLists, [], [4, 5, 6], doNothing, []),
-  (combineLists, [], [], doNothing, [])
+  (combineLists, ([1, 2, 3], [4, 5, 6], mockAdd), [5, 7, 9]), 
+  (combineLists, ([1, 2], [4, 5, 6], mockAdd), [5, 7]), 
+  (combineLists, ([], [4, 5, 6], mockModulus), []),
+  (combineLists, ([], [], mockModulus), []),
+  (combineLists, ([1, 2, 3], [4, 5, 6], mockDiv), [0, 0, 0]),
+  (combineLists, ([1, 2], [4, 5, 6], mockDiv), [0, 0]),
+  (combineLists, ([8, 8, 3], [4], mockDiv), [2]),
+  (combineLists, ([4], [4, 5, 6], mockDiv), [1]),
+  (combineLists, ([], [], mockDiv), []),
+  (combineLists, ([1, 2, 3], [4, 5, 6], doNothing), [1, 2, 3]),
+  (combineLists, ([1, 2], [4, 5, 6], doNothing), [1, 2]),
+  (combineLists, ([1, 2, 3], [], doNothing), []),
+  (combineLists, ([], [4, 5, 6], doNothing), []),
+  (combineLists, ([], [], doNothing), [])
 ];
-runTestCasesIntListIntListOperatorToIntList(testCasesCombineLists);
+
+fun combineListsParamsToString(li1, li2, _) = "combineLists(" ^ valueToStringIntList(li1) ^ ", " ^ valueToStringIntList(li2) ^ ")";
+runTests(testCasesCombineLists, combineListsParamsToString, valueToStringIntList);

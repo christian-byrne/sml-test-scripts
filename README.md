@@ -14,7 +14,6 @@ chmod +x ./install
 ## Run tests
 
 ```
-chmod +x ./test
 ./test
 ```
 

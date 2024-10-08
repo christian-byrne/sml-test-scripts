@@ -1,0 +1,1 @@
+source: https://github.com/Rukiza/tree-sitter-prolog

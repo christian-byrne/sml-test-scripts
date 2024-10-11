@@ -15,4 +15,6 @@ removeAll [1,2,3,4,5,6,7,8,9,10] 5;
 
 (* You can rearrange the order of the params like this *)
 fun removeAll x li = foldr (fn (cur, acc) => if cur = x then acc else cur::acc) [] li;
+
+(* But then the call site must be updated to reflect the new order *)
 removeAll 0 [1,2,0,3,4,0,5];

@@ -94,3 +94,48 @@ fun triangleR(a, b, c) =
     end;
 
 
+
+fun get(cur::li, 0) = cur
+ |  get(cur::li, index) = get(li, index - 1);
+
+ val testGet = get([1,2,3,4,5], 4)
+
+
+fun subList(li, startIndex, endIndex) = if startIndex = endIndex then [get(li, startIndex)] else [get(li, startIndex)] @ subList(li, startIndex + 1, endIndex);
+
+val testSubList = subList([1,2,3,4,5,6,7,8,9,10], 4, 8);
+
+
+fun reverse li = foldl (fn(cur, acc) => cur::acc) [] li;
+
+val testReverse = reverse [1,2,3,4,5,6];
+
+
+
+fun apply([], f) = []
+  | apply(x::li, f) = [f(x)] @ apply(li, f);
+
+val testApply = apply([(1,2),(3,4),(5,6)],(op +));
+
+
+
+fun collapse([], startVal, func) = startVal
+  | collapse(cur::li, startVal, func) = func(cur, collapse(li, startVal, func));
+
+val testCollapse = collapse([1,2,3,4,5],0,(op +));
+
+
+
+(* fun quicksort = fun *)
+
+
+fun substring(str, "") = false
+  | substring(str, isIn) = if String.size(str) = String.size(isIn) then false else if str = String.substring(isIn, 0, String.size(str)) then true else substring(str, 
+    String.substring(
+      isIn, 
+      1, 
+      String.size(isIn)
+    )
+  );
+
+val testSubstring = substring("hello", "world hello")

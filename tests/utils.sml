@@ -24,6 +24,18 @@ fun valueToStringStringList([]) = "[]"
   | valueToStringStringList(lst) =
       "[" ^ String.concatWith ", " lst ^ "]";
 
+(* Function to convert char list to string *)
+fun valueToStringCharList([]) = "[]"
+  | valueToStringCharList(lst) =
+      "[" ^ String.concatWith ", " (List.map Char.toString lst) ^ "]";
+
+
+(* ---------------------- Comparator/Equality Functions --------------------- *)
+
+fun isEqualList([], []) = true
+  | isEqualList(x::xs, y::ys) = x = y andalso isEqualList(xs, ys)
+  | isEqualList(_, _) = false;
+
 (* ------------------------------- Formatters ------------------------------- *)
 
 (* Function to color the output in the terminal *)
@@ -51,5 +63,26 @@ fun runTests([], _, _) = ()
       (* Error code so GH actions can detect if a test failed *)
       if result <> expected then raise Fail("Test failed")
       else runTests(testCaseList, paramToString, resultToString)
+    end;
+
+(* Generic test runner with custom comparator equality function *)
+fun runTestsCustomComparator([], _, _, _) = ()
+  | runTestsCustomComparator(testCase::testCaseList, paramToString, resultToString, isEqual) =
+    let
+      val (f, params, expected) = testCase
+      val result = f(params)
+      val testMessage =
+        if not(isEqual(result, expected)) then
+          red("Test failed\n") ^
+          "Arguments: " ^ paramToString(params) ^ "\n" ^
+          "Expected: " ^ resultToString(expected) ^ "\n" ^
+          "Actual: " ^ resultToString(result) ^ "\n\n"
+        else
+          green("Test passed\n")
+    in
+      print(testMessage);
+      (* Error code so GH actions can detect if a test failed *)
+      if not(isEqual(result, expected)) then raise Fail("Test failed")
+      else runTestsCustomComparator(testCaseList, paramToString, resultToString, isEqual)
     end;
 

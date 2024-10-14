@@ -1,11 +1,12 @@
 (* 
  *  Author: Christian Byrne
  *  Date: 9/27/24
- *  Large Assignment #1
- *  Desc: Practice functions in SML, 
- *        focusing on pattern matching 
- *        and recursion.
+ *  Large Assignment #01
+ *  Desc: Practice functions in SML, focusing on features of the 
+ *        language such as pattern matching, currying, partial 
+ *        application, and higher-order functions.
  *)
+
 
 
 (* 
@@ -91,10 +92,10 @@ fun suffix([], _) = true
         | suffixEqual(x::a, y::b) = if x = y then suffixEqual(a, b) else false
       val truncateCount = listLength(li2) - listLength(li1)
     in
+      (* Handle case: li1 longer than li2 *)
       if truncateCount < 0 then false
       else suffixEqual(li1, truncatePrefix(truncateCount, li2))
     end;
-
 
 
 (*
@@ -103,9 +104,9 @@ fun suffix([], _) = true
  *        returns the ith element in the list. Start the
  *        indexing at 0
  *)
-fun get(cur::li, 0) = cur
- |  get(cur::li, index) = get(li, index - 1);
-
+fun get([], _) = raise Empty
+  | get(cur::li, 0) = cur
+  | get(cur::li, index) = get(li, index - 1);
 
 
 (*
@@ -117,7 +118,21 @@ fun get(cur::li, 0) = cur
  *        required for #7, it does not need to be included in a
  *        let block here.)
  *)
-fun subList(li, startIndex, endIndex) = if startIndex = endIndex then [get(li, startIndex)] else [get(li, startIndex)] @ subList(li, startIndex + 1, endIndex);
+fun subList([], _, _) = []
+  | subList(li, startIndex, endIndex) = 
+  let
+    fun listLength([]) = 0
+      | listLength(x::li) = 1 + listLength(li)
+    (* Clamp the end index to the length of the list *)
+    val clampedEndIndex = if endIndex > listLength(li) then listLength(li) else endIndex
+  in
+    (* Handle case: start index greater than end index *)
+    if startIndex > clampedEndIndex then []
+    (* Base case: start index equals end index *)
+    else if startIndex = clampedEndIndex then [get(li, startIndex)]
+    else [get(li, startIndex)] @ subList(li, startIndex + 1, clampedEndIndex)
+  end;
+
 
 (*
  *  Type: `'a list → 'a list`
@@ -125,17 +140,17 @@ fun subList(li, startIndex, endIndex) = if startIndex = endIndex then [get(li, s
  *)
 fun reverse li = foldl (fn(cur, acc) => cur::acc) [] li;
 
+
 (*
  *  Type: `'a list * ('a → 'b) → 'b list`
  *  Desc: Apply a function to a list of elements. You may not
  *        use map, foldr, or foldl.
  *  Example:
  *    apply([(1,2),(3,4),(5,6)],(op +)) → [3,7,11]
- *    apply((explode “hello”),ord) → [104,101,108,108,111
+ *    apply((explode “hello”),ord) → [104,101,108,108,111]
  *)
 fun apply([], f) = []
   | apply(x::li, f) = [f(x)] @ apply(li, f);
-
 
 
 (*
@@ -147,27 +162,96 @@ fun apply([], f) = []
  *    collapse([1,2,3,4,5],0,(op +)) → 15
  *    collapse([1.1,2.2,3.3],10.0,(op -)) → ~7.8
  *)
-fun collapse([], startVal, func) = startVal
-  | collapse(cur::li, startVal, func) = func(cur, collapse(li, startVal, func));
+fun collapse([], startVal, f) = startVal
+    (* Associativity: right-to-left with (current, accumulator) *)
+  | collapse(cur::li, startVal, f) = f(cur, collapse(li, startVal, f));
 
-(* TODO: fun quicksort = fun *)
 
-(* TODO: fun bubbleSort = fun *)
-(* TODO: fun insertionSort = fun *)
+(*
+ *  Type: `('a * 'a → bool) → 'a list → 'a list`
+ *  Desc: Sort a list using the quicksort method, but make it
+ *        general enough so that you can pass in a function and
+ *        sort in either direction and/or sort various types of
+ *        data.
+ *)
+fun quicksort f [] = []
+  | quicksort f (pivot::li) = 
+  let
+    fun partition([], left, right) = (left, right)
+      | partition(cur::li, left, right) = 
+      if f(cur, pivot) then partition(li, cur::left, right)
+      else partition(li, left, cur::right)
+    val (left, right) = partition(li, [], [])
+  in
+    quicksort f left @ [pivot] @ quicksort f right
+  end;
+
+
+(*
+ *  Type: `('a * 'a → bool) → 'a list → 'a list`
+ *  Desc: Sort a list using the bubble sort method, but make it
+ *        general enough so that you can pass in a function and
+ *        sort in either direction and/or sort various types of
+ *        data.
+ *)
+fun bubbleSort f [] = []
+  | bubbleSort f li =
+    let
+      fun swap([]) = []
+        | swap(x::[]) = [x]
+        | swap(x::y::li) = if f(x, y) then x::swap(y::li) else y::swap(x::li)
+      fun listLength([]) = 0
+        | listLength(x::li) = 1 + listLength(li)
+      (* Perform swap sort on the list *)
+      val sorted = swap(li)
+      (* Get the last element in the sorted list *)
+      val lastInSorted = hd(reverse(sorted))
+    in
+      (* Keep the last item, recurse on the rest of the list *)
+      bubbleSort f (subList(sorted, 0, listLength(sorted) - 2)) @ [lastInSorted]
+    end;
+      
+
+(*
+ *  Type: `('a * 'a → bool) → 'a list → 'a list`
+ *  Desc: Sort a list using the insertion sort method, but make it
+ *        general enough so that you can pass in a function and
+ *        sort in either direction and/or sort various types of
+ *        data.
+ *)
+fun insertionSort f [] = []
+  | insertionSort f (pivot::li) =
+  let
+    fun insert([], pivot) = [pivot]
+      | insert(cur::li, pivot) = if f(pivot, cur) then pivot::cur::li else cur::insert(li, pivot)
+  in
+    insert(insertionSort f li, pivot)
+  end;
+
 
 (*
  *  Type: `string → string → bool`
  *  Desc: Determine if a string is a substring of another
  *        string.
  *)
-fun substring(str, "") = false
-  | substring(str, isIn) = if String.size(str) = String.size(isIn) then false else if str = String.substring(isIn, 0, String.size(str)) then true else substring(str, 
-    String.substring(
-      isIn, 
-      1, 
-      String.size(isIn)
-    )
-  );
+fun substring "" "" = true
+  | substring str "" = false
+  | substring "" str = true
+  | substring str isIn = 
+    let
+      fun listLength([]) = 0
+        | listLength(x::xs) = 1 + listLength(xs)
+      fun stringLength(st) = listLength(explode st)
+      fun spliceString(startIndex, endIndex, st) = 
+        implode(subList(explode(st), startIndex, endIndex))
+      val strLen = stringLength(str)
+      val isInLen = stringLength(isIn)
+    in
+      (* Handle case: not a substring *)
+      if strLen > isInLen then false
+      else if str = spliceString(0, strLen - 1, isIn) then true
+      else substring str (spliceString(1, isInLen - 1, isIn))
+    end;
 
 
 (*
@@ -175,8 +259,19 @@ fun substring(str, "") = false
  *  Desc: Determine the index of the first occurrence of a value in a list. 
  *        Indexing should start at 0.
  *)
-fun indexOf(_, []) = ~1
-  | indexOf(x, y::ys) = if x = y then 0 else 1 + indexOf(x, ys);
+fun indexOf target li = 
+  let
+    fun listLength([]) = 0
+      | listLength(x::xs) = 1 + listLength(xs)
+    fun indexOf(_, []) = 1
+      | indexOf(target, x::li) = if x = target then 0 else 1 + indexOf(target, li)
+    val result = indexOf(target, li)
+    val liLen = listLength(li)
+  in
+    (* Handle case: target not found -> return -1 *)
+    if result > liLen then ~1
+    else result
+  end;
 
 
 (*
@@ -184,22 +279,48 @@ fun indexOf(_, []) = ~1
  *  Desc: Turn a decimal number into a string representation of base N. 
  *        The input for N will be an integer between 2 and 10 (inclusive).
  *)
-fun dec2BaseN(num, base) = (* Implementation pending *);
+fun dec2BaseN base n =
+  let
+    fun dec2BaseN base 0 = ""
+      | dec2BaseN base n =
+          if n < base then Int.toString(n)  (* Base case: n is less than base *)
+          else (dec2BaseN base (n div base)) ^ Int.toString(n mod base)
+    fun absVal(n) = if n < 0 then ~n else n
+    val wasNegative = n < 0
+    val result = dec2BaseN base (absVal n)
+  in
+    (* Handle case where n is exactly 0, return "0" instead of empty string *)
+    if result = "" then "0"
+    (* Add back the negative sign if n was negative *)
+    else if wasNegative then "~" ^ result
+    else result
+  end;
 
 
 (*
  *  Type: `int → 'a list → 'a list`
  *  Desc: Drop every nth element in a list.
  *)
-fun dropNth(_, []) = []
-  | dropNth(n, xs) = (* Implementation pending *);
-
+fun dropNth _ [] = []
+  | dropNth 1 _ = [] 
+  | dropNth n li = 
+    let
+      fun listLength([]) = 0
+        | listLength(x::xs) = 1 + listLength(xs)
+      val liLen = listLength(li)
+    in
+      (* Handle bad input: n less than 1 *)
+      if n < 1 then li
+      (* Base case: next nth beyond list bounds *)
+      else if n > liLen then li
+      else subList(li, 0, n - 2) @ dropNth n (subList(li, n, liLen - 1))
+    end;
 
 (*
  *  Type: `'a list list → 'a list`
  *  Desc: Flatten a list of lists into a single list of elements.
  *)
-fun flatten(li) = List.concat(li);
+(* fun flatten(li) = List.concat(li); *)
 
 
 (*
@@ -207,36 +328,36 @@ fun flatten(li) = List.concat(li);
  *  Desc: Take a list of lists, a function, and a starting value. 
  *        Apply the function recursively to each list, condensing it to a single value.
  *)
-fun condenseLists(f, startVal, lists) = List.map (fn xs => List.foldl f startVal xs) lists;
+(* fun condenseLists(f, startVal, lists) = List.map (fn xs => List.foldl f startVal xs) lists; *)
 
 
 (*
  *  Type: `('a → bool) → 'a list → 'a list`
  *  Desc: Remove all elements from a list for which the given function returns true.
  *)
-fun remove(f, xs) = List.filter (fn x => not (f x)) xs;
+(* fun remove(f, xs) = List.filter (fn x => not (f x)) xs; *)
 
 
 (*
  *  Type: `'a list → 'a list`
  *  Desc: Take a list and create a new list where every element is repeated three times.
  *)
-fun triplist(xs) = List.concat (List.map (fn x => [x, x, x]) xs);
+(* fun triplist(xs) = List.concat (List.map (fn x => [x, x, x]) xs); *)
 
 
 (*
  *  Type: `'a list → int → 'a list`
  *  Desc: Take a list and an integer n and create a list that repeats the original list n times.
  *)
-fun repeat(_, 0) = []
-  | repeat(xs, n) = xs @ repeat(xs, n - 1);
+(* fun repeat(_, 0) = []
+  | repeat(xs, n) = xs @ repeat(xs, n - 1); *)
 
 
 (*
  *  Type: `'a list → ('a → bool) → ('a → 'a) → 'a list`
  *  Desc: Apply function g to all elements in the list for which function f returns true.
  *)
-fun filterApply(xs, f, g) = List.map (fn x => if f x then g x else x) xs;
+(* fun filterApply(xs, f, g) = List.map (fn x => if f x then g x else x) xs; *)
 
 
 (*
@@ -244,60 +365,60 @@ fun filterApply(xs, f, g) = List.map (fn x => if f x then g x else x) xs;
  *  Desc: Create an arithmetic sequence starting at a with a common difference of d 
  *        and a length of l.
  *)
-fun arithSeq(a, d, l) = List.tabulate(l, fn i => a + i * d);
+(* fun arithSeq(a, d, l) = List.tabulate(l, fn i => a + i * d); *)
 
 
 (*
  *  Type: `'a → 'a list → bool`
  *  Desc: Return true if the element is in the list, false otherwise.
  *)
-fun element(x, xs) = List.exists (fn y => y = x) xs;
+(* fun element(x, xs) = List.exists (fn y => y = x) xs; *)
 
 
 (*
  *  Type: `'a list → bool`
  *  Desc: Return true if the list is a set (no duplicates), false otherwise.
  *)
-fun isSet(xs) = xs = List.tabulate(List.length xs, fn i => List.nth(xs, i));
+(* fun isSet(xs) = xs = List.tabulate(List.length xs, fn i => List.nth(xs, i)); *)
 
 
 (*
  *  Type: `'a list * 'a list → 'a list`
  *  Desc: Combine two lists to produce the union of the two sets.
  *)
-fun union(xs, ys) = List.concat [xs, ys];
+(* fun union(xs, ys) = List.concat [xs, ys]; *)
 
 
 (*
  *  Type: `'a list * 'a list → 'a list`
  *  Desc: Combine two lists to produce the intersection of the two sets.
  *)
-fun intersection(xs, ys) = List.filter (fn x => List.exists (fn y => x = y) ys) xs;
+(* fun intersection(xs, ys) = List.filter (fn x => List.exists (fn y => x = y) ys) xs; *)
 
 
 (*
  *  Type: `'a list * 'a list → 'a list`
  *  Desc: Produce the difference of two sets (items in the first but not in the second).
  *)
-fun difference(xs, ys) = List.filter (fn x => not (List.exists (fn y => y = x) ys)) xs;
+(* fun difference(xs, ys) = List.filter (fn x => not (List.exists (fn y => y = x) ys)) xs; *)
 
 
 (*
  *  Type: `'a list * 'a list → 'a list`
  *  Desc: Produce the xor of two sets (items in one set but not both).
  *)
-fun xor(xs, ys) = difference(union(xs, ys), intersection(xs, ys));
+(* fun xor(xs, ys) = difference(union(xs, ys), intersection(xs, ys)); *)
 
 
 (*
  *  Type: `'a list → 'a list list`
  *  Desc: Return the powerset of a set.
  *)
-fun powerset([]) = [[]]
+(* fun powerset([]) = [[]]
   | powerset(x::xs) = let
       val rest = powerset(xs)
     in
       rest @ List.map (fn ys => x::ys) rest
-    end;
+    end; *)
 
 

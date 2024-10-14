@@ -30,7 +30,11 @@ val testCasesSubListInt = [
 
   (* 9. List with duplicate elements (sublist with repetitions) *)
   (subList, ([1, 2, 2, 3], 1, 3), [2, 2, 3]),
+  
+  (subList, ([1, 2, 3, 4, 5], 1, 3), [2, 3, 4]),
 
+  (subList, ([1, 2, 2, 3], 0, 1), [1, 2]),
+  
   (* 10. Start index out of range (empty result) *)
   (subList, ([1, 2, 3], 5, 6), [])
 ];

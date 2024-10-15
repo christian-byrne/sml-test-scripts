@@ -318,107 +318,165 @@ fun dropNth _ [] = []
 
 (*
  *  Type: `'a list list → 'a list`
- *  Desc: Flatten a list of lists into a single list of elements.
+ *  Desc: Takes a list of lists and flattens it so that it is
+ *        now just a single list of elements. It should contain
+ *        all the original elements in the same order, but they
+ *        should no longer be separated into lists. This should
+ *        be a one-liner using map, foldr, and/or foldl.
  *)
-(* fun flatten(li) = List.concat(li); *)
+fun flatten li = foldr (fn(cur, acc) => cur @ acc) [] li;
 
 
 (*
  *  Type: `('a * 'b → 'b) → 'b → 'a list list → 'b list`
- *  Desc: Take a list of lists, a function, and a starting value. 
- *        Apply the function recursively to each list, condensing it to a single value.
+ *  Desc: Take a list of lists, a function, and a starting
+ *        value. Apply the function recursively to each list,
+ *        condensing it to a single value. The result is the
+ *        list of the results for each inner list. This should
+ *        be a one-liner using map, foldr, and/or foldl.
  *)
-(* fun condenseLists(f, startVal, lists) = List.map (fn xs => List.foldl f startVal xs) lists; *)
+fun condenseLists f startVal li = foldl (fn(cur, acc) => f(cur, acc)) startVal li;
 
 
 (*
  *  Type: `('a → bool) → 'a list → 'a list`
- *  Desc: Remove all elements from a list for which the given function returns true.
+ *  Desc: Remove all the elements from a list for which the
+ *        given function returns true. This should be a
+ *        one-liner using map, foldr, and/or foldl
  *)
-(* fun remove(f, xs) = List.filter (fn x => not (f x)) xs; *)
+fun remove f li = foldr (fn(cur, acc) => if f(cur) then acc else cur::acc) [] li;
 
 
 (*
  *  Type: `'a list → 'a list`
- *  Desc: Take a list and create a new list where every element is repeated three times.
+ *  Desc: Take a list and create a new list where every element
+ *        is repeated three times. Do not use append.
  *)
-(* fun triplist(xs) = List.concat (List.map (fn x => [x, x, x]) xs); *)
+fun triplist li = foldr (fn(cur, acc) => cur::cur::cur::acc) [] li;
 
 
 (*
  *  Type: `'a list → int → 'a list`
- *  Desc: Take a list and an integer n and create a list that repeats the original list n times.
+ *  Desc: Take a list l and an integer n and create a list that
+ *        repeats l n times.
  *)
-(* fun repeat(_, 0) = []
-  | repeat(xs, n) = xs @ repeat(xs, n - 1); *)
+fun repeat _ 0 = []
+  | repeat li n = li @ repeat(li, n - 1);
 
 
 (*
  *  Type: `'a list → ('a → bool) → ('a → 'a) → 'a list`
- *  Desc: Apply function g to all elements in the list for which function f returns true.
+ *  Desc: Takes a list l, a function f, and a function g. It
+ *        then returns a list where all the elements in l for
+ *        which f is true have g applied to them. You should do
+ *        this in one line with map, foldr, and/or foldl.
  *)
-(* fun filterApply(xs, f, g) = List.map (fn x => if f x then g x else x) xs; *)
+fun filterApply li f g = foldl (fn(cur, acc) => if f(cur) then g(cur)::acc else cur::acc) [] li;
 
 
 (*
  *  Type: `int → int → int → int list`
- *  Desc: Create an arithmetic sequence starting at a with a common difference of d 
- *        and a length of l.
+ *  Desc: Given three integers (a, d, and l), create a
+ *        list of length l that contains an arithmetic
+ *        sequence starting at a with a common difference
+ *        of d. Do not use append or a reverse list
+ *        function.
  *)
-(* fun arithSeq(a, d, l) = List.tabulate(l, fn i => a + i * d); *)
+fun arithSeq a d 0 = []
+  | arithSeq a d l = a::arithSeq (a + d) d (l - 1); 
 
 
 (*
  *  Type: `'a → 'a list → bool`
- *  Desc: Return true if the element is in the list, false otherwise.
+ *  Desc: Return true if the element is in the list, 
+ *        false otherwise.
  *)
-(* fun element(x, xs) = List.exists (fn y => y = x) xs; *)
+fun element x [] = false
+  | element x (y::li) = if x = y then true else element x li;
 
 
 (*
  *  Type: `'a list → bool`
- *  Desc: Return true if the list is a set (no duplicates), false otherwise.
+ *  Desc: Return true if the list is a set, meaning that
+ *        it has no duplicate values. Return false
+ *        otherwise.
  *)
-(* fun isSet(xs) = xs = List.tabulate(List.length xs, fn i => List.nth(xs, i)); *)
+fun isSet([]) = true
+  | isSet(x::li) =
+    let
+      fun countOccurences(target, []) = 0
+        | countOccurences(target, x::li) = 
+          if target = x 
+          then 1 + countOccurences(target, li) 
+          else countOccurences(target, li)
+    in
+      if countOccurences(x, li) > 0 then false
+      else isSet(li)
+    end;
 
 
 (*
  *  Type: `'a list * 'a list → 'a list`
- *  Desc: Combine two lists to produce the union of the two sets.
+ *  Desc: Combine two lists, which you can assume are
+ *        sets, to produce the union of the two sets. The
+ *        resulting order of the elements does not matter.
  *)
-(* fun union(xs, ys) = List.concat [xs, ys]; *)
+fun union([], []) = [];
+  | union(x::li1, []) = x::li1
+  | union([], y::li2) = y::li2
+  | union(x::li1, y::li2) = if element x li2 then union(li1, y::li2) else x::union(li1, y::li2)
 
 
 (*
  *  Type: `'a list * 'a list → 'a list`
- *  Desc: Combine two lists to produce the intersection of the two sets.
+ *  Desc: Combine two lists, which you can assume are
+ *        sets, to produce the intersection of the two
+ *        sets. The resulting order of the elements does
+ *        not matter.
  *)
-(* fun intersection(xs, ys) = List.filter (fn x => List.exists (fn y => x = y) ys) xs; *)
+fun intersection(li1, li2) = 
+  let
+    val liUnion = union(li1, li2)
+    fun elementInBoth(x) = element x li1 andalso element x li2
+  in
+    foldr (fn(cur, acc) => if elementInBoth(cur) then cur::acc else acc) [] liUnion
+  end;
 
 
 (*
  *  Type: `'a list * 'a list → 'a list`
- *  Desc: Produce the difference of two sets (items in the first but not in the second).
+ *  Desc: Combine two lists, which you can assume are
+ *        sets, to produce the difference of the two sets
+ *        (i.e. the items that are in the first set but
+ *        not in the second set.) The resulting order of
+ *        the elements does not matter.
  *)
-(* fun difference(xs, ys) = List.filter (fn x => not (List.exists (fn y => y = x) ys)) xs; *)
+fun difference([], _) = []
+  | difference(x::li1, li2) = if element x li2 then difference(li1, li2) else x::difference(li1, li2);
 
 
 (*
  *  Type: `'a list * 'a list → 'a list`
- *  Desc: Produce the xor of two sets (items in one set but not both).
+ *  Desc: Combine two lists, which you can assume are
+ *        sets, to produce the xor of the two sets (i.e.
+ *        any items that are in one set but not the
+ *        other.) The resulting order of the elements does
+ *        not matter.
  *)
-(* fun xor(xs, ys) = difference(union(xs, ys), intersection(xs, ys)); *)
+fun xor(li1, li2) = union(difference(li1, li2), difference(li2, li1));
 
 
 (*
  *  Type: `'a list → 'a list list`
- *  Desc: Return the powerset of a set.
+ *  Desc: Given a list that you can assume is a set,
+ *        return the powerset of the set (i.e. the set of
+ *        all possible subsets.)
  *)
-(* fun powerset([]) = [[]]
-  | powerset(x::xs) = let
-      val rest = powerset(xs)
+fun powerset([]) = [[]]
+  | powerset(x::li) = 
+    let
+      val ps = powerset(li)
     in
-      rest @ List.map (fn ys => x::ys) rest
-    end; *)
-
+      ps @ map (fn(cur) => x::cur) ps
+    end;
 

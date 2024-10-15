@@ -11,11 +11,18 @@ fun cubeR(a: real) = a * a * a;
 fun combine((i1, i2), (i3, r1), (r2, i4), (r3, r4)) = real(i1 + i2) * (real(i3) + r1) * (r2 + real(i4)) * (r3 + r4);
 
 (* Question 5 *)
+(* Bad Version (not using pattern matching) *)
 fun firstChars(a, b) =
     if (a = "" andalso b = "") then ""
     else if a = "" then implode([hd(explode(b))])
     else if b = "" then implode([hd(explode(a))])
     else implode([hd(explode(a))] @ [hd(explode(b))]);
+
+(* Good Version (using pattern matching) *)
+fun firstChars("", "") = ""
+  | firstChars(a, "") = implode([hd(explode(a))])
+  | firstChars("", b) = implode([hd(explode(b))])
+  | firstChars(a, b) = implode([hd(explode(a))] @ [hd(explode(b))]);
 
 (* Question 6 *)
 fun sortPairs((a, b), (c, d)) = if (a + b) > (c + d) then ((a, b), (c, d)) else ((c, d), (a, b));

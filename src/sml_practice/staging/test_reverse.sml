@@ -21,6 +21,8 @@ val testCasesReverseInt = [
 
   (* 6. List with negative numbers *)
   (reverse, ([~1, ~2, ~3]), [~3, ~2, ~1]),
+  
+  (reverse, ([1,2,3,4]), [4,3,2,1]),
 
   (* 7. Large list (reversal should be correct) *)
   (* (reverse, (List.tabulate(10, fn i => i + 1)), List.tabulate(10, fn i => 10 - i)), *)

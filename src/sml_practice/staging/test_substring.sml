@@ -28,6 +28,8 @@ val testCasesSubstring = [
 
   (* 8. Substring longer than the string *)
   (fn (s1, s2) => substring s1 s2, ("hello world", "hello"), false),
+  
+  (fn (s1, s2) => substring s1 s2, ("zon", "arizona"), true),
 
   (* 9. Case sensitivity check *)
   (fn (s1, s2) => substring s1 s2, ("Hello", "hello"), false),

@@ -9,6 +9,9 @@ val testCasesQuicksortInt = [
   (fn li => quicksort (fn (a, b) => a < b) li, [1, 2, 3, 4, 5], [1, 2, 3, 4, 5]),
   (fn li => quicksort (fn (a, b) => a < b) li, [5, 4, 3, 2, 1], [1, 2, 3, 4, 5]),
   (fn li => quicksort (fn (a, b) => a < b) li, [3, 1, 4, 1, 5], [1, 1, 3, 4, 5]),
+  
+  (fn li => quicksort (op <=) li, [3,5,1,2,4], [1,2,3,4,5]),
+  
   (fn li => quicksort (fn (a, b) => a > b) li, [1, 2, 3, 4, 5], [5, 4, 3, 2, 1]),
   (fn li => quicksort (fn (a, b) => a < b) li, [3, ~1, ~2, 5, 0], [~2, ~1, 0, 3, 5]),
   (fn li => quicksort (fn (a, b) => a < b) li, [], []),

@@ -16,6 +16,8 @@ val testCasesIndexOf = [
 
   (* 4. Value at the end of the list *)
   (fn (x, li) => indexOf x li, (5, [1, 2, 3, 4, 5]), 4),
+  
+  (fn (x, li) => indexOf x li, (3, [1, 2, 3, 4, 5]), 2),
 
   (* 5. Value in the middle of the list *)
   (fn (x, li) => indexOf x li, (3, [1, 2, 3, 4, 5]), 2),

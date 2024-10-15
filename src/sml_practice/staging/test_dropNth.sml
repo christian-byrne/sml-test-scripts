@@ -16,6 +16,8 @@ val testCasesDropNthInt = [
 
   (* 4. Drop every nth element where n > length of list (should return the same list) *)
   (fn (n, li) => dropNth n li, (10, [1, 2, 3, 4, 5]), [1, 2, 3, 4, 5]),
+  
+  (fn (n, li) => dropNth n li, (2, [1, 2, 3, 4, 5]), [1, 3, 5]),
 
   (* 5. Drop every nth element for an empty list *)
   (fn (n, li) => dropNth n li, (3, []), []),

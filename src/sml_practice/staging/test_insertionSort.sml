@@ -9,6 +9,9 @@ val testCasesInsertionSortInt = [
   (fn li => insertionSort (fn (a, b) => a < b) li, [1, 2, 3, 4, 5], [1, 2, 3, 4, 5]),
   (fn li => insertionSort (fn (a, b) => a < b) li, [5, 4, 3, 2, 1], [1, 2, 3, 4, 5]),
   (fn li => insertionSort (fn (a, b) => a < b) li, [3, 1, 4, 1, 5], [1, 1, 3, 4, 5]),
+  
+  (fn li => insertionSort (op <=) li, [~4,1,8,9,0,~2], [~4,~2,0,1,8,9]),
+  
   (fn li => insertionSort (fn (a, b) => a > b) li, [1, 2, 3, 4, 5], [5, 4, 3, 2, 1]),
   (fn li => insertionSort (fn (a, b) => a < b) li, [3, ~1, ~2, 5, 0], [~2, ~1, 0, 3, 5]),
   (fn li => insertionSort (fn (a, b) => a < b) li, [], []),

@@ -1,3 +1,8 @@
+(* Tests Provided by Professor *)
+
+use "src/large_assignment_01/large_assignment_01.sml";
+use "tests/utils.sml";
+
 print "triangle\n";
 triangle(2,3,4) = true;
 print "triangleR\n";
@@ -22,16 +27,16 @@ print "collapse\n";
 collapse([1,2,3,4],5,(op +)) = 15;
 print "quicksort\n";
 quicksort (op <=) [3,5,1,2,4] = [1,2,3,4,5];
-print "bubblesort\n";
-bubblesort (op >=) [1,1,4,2,3] = [4,3,2,1,1];
+print "bubbleSort\n";
+bubbleSort (op >=) [1,1,4,2,3] = [4,3,2,1,1];
 print "insertionSort\n";
 insertionSort (op <=) [~4,1,8,9,0,~2] = [~4,~2,0,1,8,9];
 print "substring\n";
 substring "zon" "arizona" = true;
 print "indexOf\n";
 indexOf 3 [1,2,3,4,5] = 2;
-print "dec2baseN\n";
-dec2baseN 2 10 = "1010";
+print "dec2BaseN\n";
+dec2BaseN 2 10 = "1010";
 print "dropNth\n";
 dropNth 2 [1,2,3,4,5] = [1,3,5];
 print "flatten\n";
@@ -47,7 +52,7 @@ repeat [1,2] 4 = [1,2,1,2,1,2,1,2];
 print "filterApply\n";
 filterApply [1,2,3,4,5] (fn x => x mod 2 = 0) (fn x => x + 1) = [1,3,3,5,5];
 print "arithSeq\n";
-arithSeq 0 5 4 = [0,5,15,20];
+arithSeq 0 5 4 = [0,5,10,15];
 print "element\n";
 element 5 [1,2,3,4,5,6,7,8] = true;
 print "isSet\n";

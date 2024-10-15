@@ -21,6 +21,8 @@ val testCasesSubListInt = [
 
   (* 6. Sublist of a single element at the last index *)
   (subList, ([10, 20, 30, 40], 3, 3), [40]),
+  
+  (subList, ([1,2,3,4,5], 1, 3), [2,3,4]),
 
   (* 7. Large list with sublist in the middle *)
   (* (subList, (List.tabulate(100, fn i => i + 1), 50, 55), [51, 52, 53, 54, 55, 56]), *)

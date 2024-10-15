@@ -9,6 +9,8 @@ val testCasesApplyInt = [
 
   (* 2. Single-element list *)
   (apply, ([2], fn x => x * 2), [4]),
+  
+  (apply, ([1,2,3,4,5], fn x => x + 2), [3,4,5,6,7]),
 
   (* 3. List of integers with addition function *)
   (apply, ([1, 2, 3], fn x => x + 1), [2, 3, 4])

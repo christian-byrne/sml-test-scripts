@@ -33,11 +33,11 @@ fun triangle(0, _, _) = false
 fun triangleR(a, b, c) = 
   let
     val epsilon = 1.0E~10
-    fun is_zero(x) = abs(x) < epsilon
-    fun sum_geq_to(a, b, to) = a + b >= to
+    fun isZero(x) = abs(x) < epsilon
+    fun sumGeqTo(a, b, to) = a + b >= to
   in
-    not(is_zero(a)) andalso not(is_zero(b)) andalso not(is_zero(c)) andalso
-    sum_geq_to(a, b, c) andalso sum_geq_to(a, c, b) andalso sum_geq_to(b, c, a)
+    not(isZero(a)) andalso not(isZero(b)) andalso not(isZero(c)) andalso
+    sumGeqTo(a, b, c) andalso sumGeqTo(a, c, b) andalso sumGeqTo(b, c, a)
   end;
 
 
@@ -71,8 +71,8 @@ fun triangleR(a, b, c) =
  *        contains all the elements in l that are greater than
  *        n. Keep the same relative order of items.
  *)
- fun gtList(_, []) = []
-  | gtList(n, x::li) = if x > n then x::gtList(n, li) else gtList(n, li);
+ fun gtList([], _) = []
+  | gtList(x::li, n) = if x > n then x::gtList(li, n) else gtList(li, n);
 
 
 (*
@@ -316,6 +316,7 @@ fun dropNth _ [] = []
       else subList(li, 0, n - 2) @ dropNth n (subList(li, n, liLen - 1))
     end;
 
+
 (*
  *  Type: `'a list list → 'a list`
  *  Desc: Takes a list of lists and flattens it so that it is
@@ -335,7 +336,7 @@ fun flatten li = foldr (fn(cur, acc) => cur @ acc) [] li;
  *        list of the results for each inner list. This should
  *        be a one-liner using map, foldr, and/or foldl.
  *)
-fun condenseLists f startVal li = foldl (fn(cur, acc) => f(cur, acc)) startVal li;
+fun condenseLists f startVal li = foldr (fn(cur, acc) => collapse(cur, startVal, f)::acc) [] li;
 
 
 (*
@@ -360,8 +361,8 @@ fun triplist li = foldr (fn(cur, acc) => cur::cur::cur::acc) [] li;
  *  Desc: Take a list l and an integer n and create a list that
  *        repeats l n times.
  *)
-fun repeat _ 0 = []
-  | repeat li n = li @ repeat(li, n - 1);
+fun repeat li 0 = []
+  | repeat li n = li @ repeat li (n - 1);
 
 
 (*
@@ -371,7 +372,7 @@ fun repeat _ 0 = []
  *        which f is true have g applied to them. You should do
  *        this in one line with map, foldr, and/or foldl.
  *)
-fun filterApply li f g = foldl (fn(cur, acc) => if f(cur) then g(cur)::acc else cur::acc) [] li;
+fun filterApply li f g = foldr (fn(cur, acc) => if f(cur) then g(cur)::acc else cur::acc) [] li;
 
 
 (*
@@ -402,17 +403,7 @@ fun element x [] = false
  *        otherwise.
  *)
 fun isSet([]) = true
-  | isSet(x::li) =
-    let
-      fun countOccurences(target, []) = 0
-        | countOccurences(target, x::li) = 
-          if target = x 
-          then 1 + countOccurences(target, li) 
-          else countOccurences(target, li)
-    in
-      if countOccurences(x, li) > 0 then false
-      else isSet(li)
-    end;
+  | isSet(x::li) = if indexOf x li = ~1 then isSet(li) else false
 
 
 (*
@@ -421,10 +412,10 @@ fun isSet([]) = true
  *        sets, to produce the union of the two sets. The
  *        resulting order of the elements does not matter.
  *)
-fun union([], []) = [];
-  | union(x::li1, []) = x::li1
-  | union([], y::li2) = y::li2
-  | union(x::li1, y::li2) = if element x li2 then union(li1, y::li2) else x::union(li1, y::li2)
+fun union([], []) = []
+  | union(li1, []) = li1
+  | union([], li2) = li2
+  | union(x::li1, li2) = if element x li2 then union(li1, li2) else x::union(li1, li2);
 
 
 (*

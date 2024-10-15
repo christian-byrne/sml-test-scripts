@@ -80,6 +80,8 @@ val testTriangle = [
   (* 11. Two sides equal the third *)
   (triangle, (2, 2, 4), true), (* 2 + 2 = 4, but no strict inequality, so should pass *)
   
+  (triangle, (2, 3, 4), true),
+  
   (* 12. Two large sides, one very small side *)
   (triangle, (9999, 9999, 1), true) (* 9999 + 1 > 9999, should pass always *)
 ];

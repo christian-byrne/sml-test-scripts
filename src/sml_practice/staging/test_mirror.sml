@@ -27,6 +27,8 @@ val testCasesMirrorInt = [
 
   (* 8. List with negative numbers *)
   (mirror, ([~1, ~2, ~3]), [~1, ~2, ~3, ~3, ~2, ~1]),
+  
+  (mirror, ([1,2,3,4]), [1,2,3,4,4,3,2,1]),
 
   (* 14. Longer list (6 elements) *)
   (mirror, ([1, 2, 3, 4, 5, 6]), [1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1])

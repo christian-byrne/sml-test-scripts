@@ -14,6 +14,11 @@ fun valueToStringIntList([]) = "[]"
   | valueToStringIntList(lst) =
       "[" ^ String.concatWith ", " (List.map Int.toString lst) ^ "]";
 
+(* Function to convert int list list to string *)
+fun valueToStringIntListList([]) = "[]"
+  | valueToStringIntListList(lst) =
+      "[" ^ String.concatWith ", " (List.map valueToStringIntList lst) ^ "]";
+
 (* Function to convert bool list to string *)
 fun valueToStringBoolList([]) = "[]"
   | valueToStringBoolList(lst) =
@@ -23,6 +28,11 @@ fun valueToStringBoolList([]) = "[]"
 fun valueToStringStringList([]) = "[]"
   | valueToStringStringList(lst) =
       "[" ^ String.concatWith ", " lst ^ "]";
+
+(* Function to convert string list list to string *)
+fun valueToStringStringListList([]) = "[]"
+  | valueToStringStringListList(lst) =
+      "[" ^ String.concatWith ", " (List.map valueToStringStringList lst) ^ "]";
 
 (* Function to convert char list to string *)
 fun valueToStringCharList([]) = "[]"

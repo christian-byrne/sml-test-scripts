@@ -17,6 +17,9 @@ val testCasesToBaseN = [
 
   (* 3. Convert a number to binary (base 2) *)
   (fn (base, num) => dec2BaseN base num, (2, 5), "101"),
+  
+  (fn (base, num) => dec2BaseN base num, (2, 12), "1100"),
+  
   (fn (base, num) => dec2BaseN base num, (2, 13), "1101"),
   (fn (num, base) => dec2BaseN num base, (2, 10), "1010"),
 

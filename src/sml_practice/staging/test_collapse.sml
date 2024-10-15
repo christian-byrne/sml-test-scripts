@@ -15,6 +15,8 @@ val testCasesCollapseInt = [
 
   (* 4. Product of multiple elements *)
   (collapse, ([1, 2, 3, 4], 1, op * ), 24),
+  
+  (collapse, ([1,2,3,4], 5, op + ), 15),
 
   (* 5. List with negative numbers (sum) *)
   (collapse, ([~1, ~2, ~3], 0, op +), ~6),

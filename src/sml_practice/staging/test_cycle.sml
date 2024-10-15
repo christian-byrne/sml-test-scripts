@@ -9,6 +9,8 @@ val testCycle = [
 
   (* 2. Cycling by 0 should return the list unchanged *)
   (cycle, (0, [1,2,3,4,5,6,7]), [1,2,3,4,5,6,7]),
+  
+  (cycle, (4, [1,2,3,4,5]), [5,1,2,3,4]),
 
   (* 3. Cycling by 1 should move the first element to the end *)
   (cycle, (1, [1,2,3,4,5]), [2,3,4,5,1]),

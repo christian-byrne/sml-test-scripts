@@ -15,6 +15,8 @@ val testCasesGetInt = [
 
   (* 4. Single element list (index 0) *)
   (get, ([42], 0), 42),
+  
+  (get, ([1,2,3,4,5], 3), 4),
 
   (* 5. Longer list, get middle element *)
   (get, ([1, 2, 3, 4, 5], 2), 3),

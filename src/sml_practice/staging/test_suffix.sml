@@ -21,6 +21,8 @@ val testCasesSuffixInt = [
 
   (* 6. Both lists are equal (a list is a suffix of itself) *)
   (suffix, ([1, 2, 3], [1, 2, 3]), true),
+  
+  (suffix, ([3, 4, 5], [1, 2, 3, 4, 5]), true),
 
   (* 7. First list is longer than the second (cannot be a suffix) *)
   (suffix, ([1, 2, 3, 4], [3, 4]), false),

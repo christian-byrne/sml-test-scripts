@@ -1,12 +1,11 @@
 (* 
+ *  Large Assignment #01
  *  Author: Christian Byrne
  *  Date: 9/27/24
- *  Large Assignment #01
  *  Desc: Practice functions in SML, focusing on features of the 
  *        language such as pattern matching, currying, partial 
  *        application, and higher-order functions.
  *)
-
 
 
 (* 
@@ -87,13 +86,16 @@ fun suffix([], _) = true
     let
       fun listLength([]) = 0
         | listLength(x::li) = 1 + listLength(li)
-      fun truncatePrefix(count, x::li) = if count = 0 then x::li else truncatePrefix(count - 1, li)
+      fun truncatePrefix(_, []) = []
+        | truncatePrefix(0, li) = li
+        | truncatePrefix(count, x::li) = truncatePrefix(count - 1, li)
       fun suffixEqual([], []) = true
+        | suffixEqual([], li) = false
+        | suffixEqual(li, []) = false
         | suffixEqual(x::a, y::b) = if x = y then suffixEqual(a, b) else false
       val truncateCount = listLength(li2) - listLength(li1)
     in
-      (* Handle case: li1 longer than li2 *)
-      if truncateCount < 0 then false
+      if truncateCount < 0 then false (* Handle case: list 1 longer than list 2 *)
       else suffixEqual(li1, truncatePrefix(truncateCount, li2))
     end;
 

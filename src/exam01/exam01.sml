@@ -23,4 +23,12 @@ fun insert comp add li =
 val testInsert = insert (fn (a, b) => a < b) 5 [1, 2, 3, 4, 6, 7, 8]; (* should be [1, 2, 3, 4, 5, 6, 7, 8] *)
 raiseIfFalse(testInsert = [1, 2, 3, 4, 5, 6, 7, 8]);
 
-(* remove question *)
+(* map to tuple question *)
+fun foo f li = map (fn (cur) => (cur, f(cur))) li;
+val bar = foo (fn x => x * x) [1, 2, 3, 4]; (* should be [(1, 1), (2, 4), (3, 9), (4, 16)] *)
+raiseIfFalse(bar = [(1, 1), (2, 4), (3, 9), (4, 16)]);
+
+(* remove symmetric dups question *)
+fun foo f li = foldr (fn ((cur1, cur2), acc) => if f(cur1) = f(cur2) then (cur1, cur2)::acc else acc) [] li;
+
+
